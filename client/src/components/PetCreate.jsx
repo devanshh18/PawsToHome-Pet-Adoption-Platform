@@ -78,10 +78,10 @@ export default function PetCreate() {
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
-      className="space-y-6 max-w-2xl mx-auto"
+      className="bg-white p-8 rounded-xl shadow-sm"
     >
       <div className="bg-white p-6 rounded-lg shadow">
-        <h2 className="text-xl font-semibold mb-6">Add New Pet</h2>
+        <h2 className="text-2xl font-semibold mb-8">List a New Pet</h2>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Basic Information */}
@@ -92,7 +92,7 @@ export default function PetCreate() {
             <input
               type="text"
               {...register("name", { required: "Name is required" })}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+              className="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition duration-200"
             />
             {errors.name && (
               <p className="mt-1 text-sm text-red-600">{errors.name.message}</p>
@@ -111,7 +111,7 @@ export default function PetCreate() {
                   required: "Years is required",
                   min: { value: 0, message: "Years must be a positive number" },
                 })}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                className="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition duration-200"
               />
               {errors.age?.years && (
                 <p className="mt-1 text-sm text-red-600">
@@ -130,7 +130,7 @@ export default function PetCreate() {
                   min: { value: 0, message: "Months must be 0 or greater" },
                   max: { value: 11, message: "Months must be less than 12" },
                 })}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                className="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition duration-200"
               />
               {errors.age?.months && (
                 <p className="mt-1 text-sm text-red-600">
@@ -147,7 +147,7 @@ export default function PetCreate() {
             </label>
             <select
               {...register("species", { required: "Species is required" })}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+              className="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition duration-200"
             >
               <option value="">Select species</option>
               <option value="Dog">Dog</option>
@@ -169,7 +169,7 @@ export default function PetCreate() {
             <input
               type="text"
               {...register("breed", { required: "Breed is required" })}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+              className="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition duration-200"
             />
             {errors.breed && (
               <p className="mt-1 text-sm text-red-600">
@@ -185,7 +185,7 @@ export default function PetCreate() {
             </label>
             <select
               {...register("gender", { required: "Gender is required" })}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+              className="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition duration-200"
             >
               <option value="">Select gender</option>
               <option value="Male">Male</option>
@@ -206,7 +206,7 @@ export default function PetCreate() {
             <input
               type="text"
               {...register("color", { required: "Color is required" })}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+              className="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition duration-200"
             />
             {errors.color && (
               <p className="mt-1 text-sm text-red-600">
@@ -222,13 +222,14 @@ export default function PetCreate() {
             </label>
             <input
               type="text"
-              {...register("weight", { required: "Weight is required",
+              {...register("weight", {
+                required: "Weight is required",
                 pattern: {
-                    value: /^[0-9]+kg$/,
-                    message: "Weight must be in format: 12kg"
-                }
-               })}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                  value: /^[0-9]+kg$/,
+                  message: "Weight must be in format: 12kg",
+                },
+              })}
+              className="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition duration-200"
               placeholder="e.g., 12kg"
             />
             {errors.weight && (
@@ -387,7 +388,7 @@ export default function PetCreate() {
                 required: "Description is required",
               })}
               rows={4}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+              className="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition duration-200"
             />
             {errors.description && (
               <p className="mt-1 text-sm text-red-600">

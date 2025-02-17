@@ -35,6 +35,7 @@ const sendTokenResponse = (user, statusCode, res) => {
         phoneNo: user.phoneNo,
         ...(user.role === "shelter" && {
           shelterName: user.shelterName,
+          state: user.state,
           city: user.city,
           shelter: user.shelter,
           address: user.address,
