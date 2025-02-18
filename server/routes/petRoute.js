@@ -4,6 +4,8 @@ import {
   getShelterPets,
   updatePet,
   deletePet,
+  searchPets,
+  getPetById,
 } from "../controllers/petController.js";
 import {
   authenticate,
@@ -17,15 +19,17 @@ import {
 
 const router = express.Router();
 
-// Apply authentication middleware to all routes
+// Public routes
+router.get("/details/:id", getPetById);
+router.get("/search", searchPets);
+
+// Protected routes
 router.use(authenticate);
-// Apply shelter role check
 router.use(authorize("shelter"));
-// Apply shelter approval check
 router.use(isShelterApproved);
 
-router.post("/", addPetValidation, addPet);
 router.get("/shelter-pets", getShelterPets);
+router.post("/", addPetValidation, addPet);
 router.put("/:id", updatePetValidation, updatePet);
 router.delete("/:id", deletePet);
 

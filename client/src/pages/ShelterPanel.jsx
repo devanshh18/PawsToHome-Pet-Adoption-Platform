@@ -17,7 +17,7 @@ import PetList from "../components/PetList";
 import AdoptionRequestsTab from "../components/AdoptionRequestsTab";
 import ShelterProfile from "../components/ShelterProfile";
 import LoadingSpinner from "../components/LoadingSpinner";
-import logo from "../assets/logo.jpg";
+
 
 export default function ShelterPanel() {
   const { user } = useSelector((state) => state.auth);
@@ -84,9 +84,9 @@ export default function ShelterPanel() {
           <div className="flex flex-col h-full">
             {/* Logo */}
             <div className="p-6 border-b border-gray-100">
-              <Link to="/" className="text-3xl font-bold text-blue-600">
+              <span className="text-3xl font-bold text-blue-600">
                 PawsToHome
-              </Link>
+              </span>
             </div>
 
             {/* Navigation */}
