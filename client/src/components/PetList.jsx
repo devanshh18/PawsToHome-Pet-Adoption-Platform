@@ -46,7 +46,7 @@ export default function PetList() {
       toast.error(error || "Failed to update pet");
     }
   };
-  
+
   if (isLoading) return <LoadingSpinner />;
 
   return (
@@ -70,11 +70,11 @@ export default function PetList() {
               key={pet._id}
               className="group bg-white rounded-2xl shadow-sm hover:shadow-md transition-all overflow-hidden"
             >
-              <div className="relative h-48 bg-gray-100 overflow-hidden">
+              <div className="relative aspect-[4/3] bg-gray-100 overflow-hidden">
                 <img
                   src={pet.photos[0]}
                   alt={pet.name}
-                  className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                  className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 min-w-full min-h-full object-cover transform-gpu transition-transform duration-300 group-hover:scale-105"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/40" />
                 <div className="absolute top-3 right-3 flex gap-2">

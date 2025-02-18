@@ -283,6 +283,8 @@ export const getMe = async (req, res, next) => {
         ...(user.role === "shelter" && {
           shelterName: user.shelterName,
           address: user.address,
+          city: user.city,
+          state: user.state,
           status: user.status,
         }),
       },
