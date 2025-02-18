@@ -44,3 +44,13 @@ export const deletePet = async (id) => {
   const response = await API.delete(`/${id}`);
   return response.data;
 };
+
+export const searchPets = async (filters) => {
+  const response = await API.get(`/search`, { params: filters });
+  return response.data;
+};
+
+export const getPetById = async (id) => {
+  const response = await API.get(`details/${id}`);
+  return response.data;
+};

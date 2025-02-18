@@ -107,7 +107,7 @@ export default function AdminPanel() {
               <div className="grid md:grid-cols-2 gap-4 mb-4">
                 <div>
                   <p className="text-gray-600">
-                    <strong>Contact:</strong> {shelter.name}
+                    <strong>Shelter Name:</strong> {shelter.name}
                   </p>
                   <p className="text-gray-600">
                     <strong>Email:</strong> {shelter.email}
