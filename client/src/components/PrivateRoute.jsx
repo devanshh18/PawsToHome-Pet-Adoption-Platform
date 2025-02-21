@@ -1,24 +1,34 @@
 import { useSelector } from 'react-redux';
-import { Navigate } from 'react-router-dom';
+import { Navigate, useLocation } from 'react-router-dom';
 
-export default function PrivateRoute({ children, adminOnly = false, allowedRoles = [], excludedRoles = [] }) {
+export default function PrivateRoute({ children, adminOnly = false, allowedRoles = [] }) {
   const { user } = useSelector((state) => state.auth);
+  const location = useLocation();
+  const isHomePage = location.pathname === '/';
 
-  if (!user) return <Navigate to="/login" />;
-  
-  // Redirect admin to admin panel
+  // Allow access to home page without authentication
+  if (isHomePage && !user) {
+    return children;
+  }
+
+  // For other routes, require authentication
+  if (!user) {
+    return <Navigate to="/login" state={{ from: location }} replace />;
+  }
+
+  // Role-based access control
   if (user.role === 'admin') {
-    return adminOnly ? children : <Navigate to="/admin" />;
+    return adminOnly ? children : <Navigate to="/admin" replace />;
   }
-  
-  // Redirect shelter to shelter panel
+
   if (user.role === 'shelter') {
-    return allowedRoles === 'shelter' ? children : <Navigate to="/shelter-panel" />;
+    return allowedRoles === 'shelter' ? children : <Navigate to="/shelter-panel" replace />;
   }
-  
+
   // Regular user (adopter) access checks
-  if (adminOnly) return <Navigate to="/" />;
-  if (allowedRoles.length > 0) return <Navigate to="/" />;
-  
+  if (adminOnly || allowedRoles.length > 0) {
+    return <Navigate to="/" replace />;
+  }
+
   return children;
 }

@@ -153,7 +153,6 @@ function App() {
       try {
         await dispatch(checkAuthStatus()).unwrap();
       } catch (error) {
-        console.log("Auth check failed:", error);
       } finally {
         setIsAuthChecked(true);
       }
