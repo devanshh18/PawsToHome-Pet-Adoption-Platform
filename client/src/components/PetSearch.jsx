@@ -12,8 +12,9 @@ import {
   FaChild,
   FaSyringe,
   FaInfoCircle,
-  FaHeartbeat,
-  FaFileAlt,
+  FaHeart,
+  FaDog,
+  FaVenusMars,
 } from "react-icons/fa";
 
 export default function PetSearch() {
@@ -43,15 +44,8 @@ export default function PetSearch() {
         }
       : null
   );
+
   // Initialize filters with URL params
-  // const [filters, setFilters] = useState({
-  //   gender: searchParams.get("gender") || "",
-  //   species: searchParams.get("species") || "Dog",
-  //   ageRange: searchParams.get("ageRange") || "",
-  //   goodWithKids: "",
-  //   goodWithPets: "",
-  //   vaccinationStatus: "",
-  // });
   const [filters, setFilters] = useState({
     species: searchParams.get("species") || "Dog",
     gender: searchParams.get("gender")?.split(",") || [],
@@ -117,91 +111,64 @@ export default function PetSearch() {
     }
   };
 
-  // Add this effect for automatic search
-  // useEffect(() => {
-  //   if (selectedLocation) {
-  //     // Only trigger automatic search for location and species changes
-  //     handleMainSearch();
-  //   }
-  // }, [selectedLocation, filters.species]); // Only depend on location and species
+  const handleSearch = useCallback(
+    async (isMainSearch = false) => {
+      if (!selectedLocation) return;
 
-  // const handleMainSearch = useCallback(async () => {
-  //   if (!selectedLocation) return;
+      try {
+        const newSearchParams = new URLSearchParams();
 
-  //   try {
-  //     const newSearchParams = new URLSearchParams();
-  //     newSearchParams.set("city", selectedLocation.city);
-  //     newSearchParams.set("state", selectedLocation.state);
-  //     newSearchParams.set("species", filters.species); // Only include main filters
+        // Always include main search params
+        newSearchParams.set("city", selectedLocation.city);
+        newSearchParams.set("state", selectedLocation.state);
+        newSearchParams.set("species", filters.species);
 
-  //     window.history.replaceState(
-  //       {},
-  //       "",
-  //       `${window.location.pathname}?${newSearchParams}`
-  //     );
+        // Handle all other filters regardless of search type
+        if (filters.gender.length > 0) {
+          newSearchParams.set("gender", filters.gender.join(","));
+        }
+        if (filters.ageRange.length > 0) {
+          newSearchParams.set("ageRange", filters.ageRange.join(","));
+        }
+        if (filters.goodWithKids === "true") {
+          newSearchParams.set("goodWithKids", "true");
+        }
+        if (filters.goodWithPets === "true") {
+          newSearchParams.set("goodWithPets", "true");
+        }
+        if (filters.vaccinationStatus === "true") {
+          newSearchParams.set("vaccinationStatus", "true");
+        }
 
-  //     await dispatch(
-  //       searchPetsByLocation({
-  //         city: selectedLocation.city,
-  //         state: selectedLocation.state,
-  //         species: filters.species,
-  //       })
-  //     ).unwrap();
-  //     setHasSearched(true);
-  //   } catch (error) {
-  //     toast.error(error || "Failed to search pets");
-  //   }
-  // }, [selectedLocation, filters.species, dispatch]);
+        window.history.replaceState(
+          {},
+          "",
+          `${window.location.pathname}?${newSearchParams}`
+        );
 
-  const handleSearch = useCallback(async (isMainSearch = false) => {
-    if (!selectedLocation) return;
-  
-    try {
-      const newSearchParams = new URLSearchParams();
-      
-      // Always include main search params
-      newSearchParams.set("city", selectedLocation.city);
-      newSearchParams.set("state", selectedLocation.state);
-      newSearchParams.set("species", filters.species);
-  
-      // Handle all other filters regardless of search type
-      if (filters.gender.length > 0) {
-        newSearchParams.set("gender", filters.gender.join(","));
+        // For API call, always include all non-empty filters
+        const apiFilters = {
+          city: selectedLocation.city,
+          state: selectedLocation.state,
+          species: filters.species,
+          ...(filters.gender.length > 0 && { gender: filters.gender }),
+          ...(filters.ageRange.length > 0 && { ageRange: filters.ageRange }),
+          ...(filters.goodWithKids === "true" && { goodWithKids: "true" }),
+          ...(filters.goodWithPets === "true" && { goodWithPets: "true" }),
+          ...(filters.vaccinationStatus === "true" && {
+            vaccinationStatus: "true",
+          }),
+        };
+
+        await dispatch(searchPetsByLocation(apiFilters)).unwrap();
+        setHasSearched(true);
+      } catch (error) {
+        toast.error(error || "Failed to search pets");
       }
-      if (filters.ageRange.length > 0) {
-        newSearchParams.set("ageRange", filters.ageRange.join(","));
-      }
-      if (filters.goodWithKids === "true") {
-        newSearchParams.set("goodWithKids", "true");
-      }
-      if (filters.goodWithPets === "true") {
-        newSearchParams.set("goodWithPets", "true");
-      }
-      if (filters.vaccinationStatus === "true") {
-        newSearchParams.set("vaccinationStatus", "true");
-      }
-  
-      window.history.replaceState({}, "", `${window.location.pathname}?${newSearchParams}`);
-  
-      // For API call, always include all non-empty filters
-      const apiFilters = {
-        city: selectedLocation.city,
-        state: selectedLocation.state,
-        species: filters.species,
-        ...(filters.gender.length > 0 && { gender: filters.gender }),
-        ...(filters.ageRange.length > 0 && { ageRange: filters.ageRange }),
-        ...(filters.goodWithKids === "true" && { goodWithKids: "true" }),
-        ...(filters.goodWithPets === "true" && { goodWithPets: "true" }),
-        ...(filters.vaccinationStatus === "true" && { vaccinationStatus: "true" })
-      };
-  
-      await dispatch(searchPetsByLocation(apiFilters)).unwrap();
-      setHasSearched(true);
-    } catch (error) {
-      toast.error(error || "Failed to search pets");
-    }
-  }, [selectedLocation, filters, dispatch]);
-  
+    },
+    [selectedLocation, filters, dispatch]
+  );
+
   // Update automatic search effect
   useEffect(() => {
     if (selectedLocation) {
@@ -210,9 +177,9 @@ export default function PetSearch() {
   }, [selectedLocation, filters.species]);
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen">
       {/* Hero Search Section */}
-      <div className="bg-gradient-to-r from-blue-600 to-purple-700 py-16 px-4">
+      <div className="bg-gradient-to-r from-blue-600 to-blue-800 py-16 px-4">
         <div className="max-w-7xl mx-auto text-center">
           <h1 className="text-4xl font-bold text-white mb-6">
             Find Your Perfect Pet
@@ -311,130 +278,180 @@ export default function PetSearch() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="flex flex-col lg:flex-row gap-8">
           {/* Filters Sidebar */}
-          <div className="lg:w-80 space-y-6">
-            <div className="bg-white p-6 rounded-xl shadow-sm">
-              <div className="space-y-6">
-                {/* Basic Information Section */}
-                <div>
-                  <div className="flex items-center gap-2 mb-4">
-                    <FaInfoCircle className="text-blue-600" />
-                    <h3 className="font-semibold text-gray-800">
-                      Basic Information
-                    </h3>
+          <div className="lg:w-80">
+            <div className="bg-white rounded-2xl shadow-lg border border-gray-100">
+              <div className="p-6 border-b border-gray-100">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h2 className="text-xl font-semibold text-gray-800">
+                      Filters
+                    </h2>
+                    <p className="text-sm text-gray-500 mt-1">
+                      Refine your search
+                    </p>
                   </div>
-                  <div className="space-y-3">
-                    {/* Age Range */}
-                    <div>
-                      <label className="text-sm text-gray-600">Age</label>
-                      <div className="space-y-2 mt-1">
-                        {["baby", "young", "adult", "senior"].map((age) => (
-                          <label key={age} className="flex items-center gap-2">
-                            <input
-                              type="checkbox"
-                              name="ageRange"
-                              value={age}
-                              checked={filters.ageRange.includes(age)}
-                              onChange={handleFilterChange}
-                              className="text-blue-600 rounded"
-                            />
-                            <span className="text-sm capitalize">{age}</span>
-                          </label>
-                        ))}
-                      </div>
-                    </div>
+                  <button
+                    onClick={() =>
+                      setFilters({
+                        species: "Dog",
+                        gender: [],
+                        ageRange: [],
+                        goodWithKids: "",
+                        goodWithPets: "",
+                        vaccinationStatus: "",
+                      })
+                    }
+                    className="text-sm text-blue-600 hover:text-blue-700 font-medium"
+                  >
+                    Reset all
+                  </button>
+                </div>
+              </div>
 
-                    {/* Gender */}
-                    <div>
-                      <label className="text-sm text-gray-600">Gender</label>
-                      <div className="space-y-2 mt-1">
-                        {["Male", "Female"].map((gender) => (
-                          <label
-                            key={gender}
-                            className="flex items-center gap-2"
-                          >
-                            <input
-                              type="checkbox"
-                              name="gender"
-                              value={gender}
-                              checked={filters.gender.includes(gender)}
-                              onChange={handleFilterChange}
-                              className="text-blue-600 rounded"
-                            />
-                            <span className="text-sm">{gender}</span>
-                          </label>
-                        ))}
-                      </div>
+              <div className="p-6 space-y-8">
+                {/* Age Range */}
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <FaInfoCircle className="text-blue-600" />
+                      <label className="font-medium text-gray-700">Age</label>
                     </div>
+                    <span className="text-xs text-gray-500">
+                      {filters.ageRange.length} selected
+                    </span>
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    {["baby", "young", "adult", "senior"].map((age) => (
+                      <label
+                        key={age}
+                        className={`flex items-center justify-center px-4 py-3 rounded-xl cursor-pointer transition-all
+                ${
+                  filters.ageRange.includes(age)
+                    ? "bg-blue-50 text-blue-700 border-2 border-blue-200 shadow-sm"
+                    : "bg-gray-50 text-gray-600 hover:bg-gray-100 border border-gray-200"
+                }`}
+                      >
+                        <input
+                          type="checkbox"
+                          name="ageRange"
+                          value={age}
+                          checked={filters.ageRange.includes(age)}
+                          onChange={handleFilterChange}
+                          className="hidden"
+                        />
+                        <span className="text-sm capitalize font-medium">
+                          {age}
+                        </span>
+                      </label>
+                    ))}
                   </div>
                 </div>
 
-                {/* Behavior Section */}
-                <div>
-                  <div className="flex items-center gap-2 mb-4">
-                    <FaHeartbeat className="text-blue-600" />
-                    <h3 className="font-semibold text-gray-800">
-                      Behavior & Health
-                    </h3>
+                {/* Gender - Keeping as is */}
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <FaVenusMars className="text-blue-600" />
+                      <label className="font-medium text-gray-700">
+                        Gender
+                      </label>
+                    </div>
+                    <span className="text-xs text-gray-500">
+                      {filters.gender.length} selected
+                    </span>
+                  </div>
+                  <div className="flex gap-4">
+                    {["Male", "Female"].map((gender) => (
+                      <label
+                        key={gender}
+                        className={`flex-1 flex items-center justify-center px-4 py-3.5 rounded-xl cursor-pointer transition-all
+                ${
+                  filters.gender.includes(gender)
+                    ? "bg-blue-50 text-blue-700 border-2 border-blue-200 shadow-sm"
+                    : "bg-gray-50 text-gray-600 hover:bg-gray-100 border border-gray-200"
+                }`}
+                      >
+                        <input
+                          type="checkbox"
+                          name="gender"
+                          value={gender}
+                          checked={filters.gender.includes(gender)}
+                          onChange={handleFilterChange}
+                          className="hidden"
+                        />
+                        <span className="text-sm font-medium">{gender}</span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Behaviour & Health */}
+                <div className="space-y-4">
+                  <div className="flex items-center gap-2">
+                    <FaHeart className="text-blue-600" />
+                    <label className="font-medium text-gray-700">
+                      Behaviour & Health
+                    </label>
                   </div>
                   <div className="space-y-3">
-                    <div>
-                      <label className="text-sm text-gray-600">Good with</label>
-                      <div className="space-y-2 mt-1">
-                        <label className="flex items-center gap-2">
-                          <input
-                            type="checkbox"
-                            name="goodWithKids"
-                            value="true"
-                            checked={filters.goodWithKids === "true"}
-                            onChange={handleFilterChange}
-                            className="text-blue-600 rounded"
-                          />
-                          <span className="text-sm">Kids</span>
-                        </label>
-                        <label className="flex items-center gap-2">
-                          <input
-                            type="checkbox"
-                            name="goodWithPets"
-                            value="true"
-                            checked={filters.goodWithPets === "true"}
-                            onChange={handleFilterChange}
-                            className="text-blue-600 rounded"
-                          />
-                          <span className="text-sm">Other Pets</span>
-                        </label>
-                      </div>
-                    </div>
-
-                    <div>
-                      <label className="text-sm text-gray-600">Health</label>
-                      <div className="space-y-2 mt-1">
-                        <label className="flex items-center gap-2">
-                          <input
-                            type="checkbox"
-                            name="vaccinationStatus"
-                            value="true"
-                            checked={filters.vaccinationStatus === "true"}
-                            onChange={handleFilterChange}
-                            className="text-blue-600 rounded"
-                          />
-                          <span className="text-sm">Vaccinated</span>
-                        </label>
-                      </div>
-                    </div>
+                    {[
+                      {
+                        name: "goodWithKids",
+                        label: "Good with Kids",
+                        icon: <FaChild className="text-lg" />,
+                      },
+                      {
+                        name: "goodWithPets",
+                        label: "Good with Pets",
+                        icon: <FaDog className="text-lg" />,
+                      },
+                      {
+                        name: "vaccinationStatus",
+                        label: "Vaccinated",
+                        icon: <FaSyringe className="text-lg" />,
+                      },
+                    ].map((option) => (
+                      <label
+                        key={option.name}
+                        className={`flex items-center justify-between w-full px-5 py-4 rounded-xl cursor-pointer transition-all
+                ${
+                  filters[option.name] === "true"
+                    ? "bg-blue-50 text-blue-700 border-2 border-blue-200 shadow-sm"
+                    : "bg-gray-50 text-gray-600 hover:bg-gray-100 border border-gray-200"
+                }`}
+                      >
+                        <div className="flex items-center gap-3">
+                          {option.icon}
+                          <span className="text-sm font-medium">
+                            {option.label}
+                          </span>
+                        </div>
+                        <input
+                          type="checkbox"
+                          name={option.name}
+                          value="true"
+                          checked={filters[option.name] === "true"}
+                          onChange={handleFilterChange}
+                          className="w-4 h-4 rounded-lg border-gray-300 text-blue-600 focus:ring-blue-500"
+                        />
+                      </label>
+                    ))}
                   </div>
                 </div>
               </div>
 
               {/* Apply Filters Button */}
-              <button
-                onClick={handleSearch}
-                className="w-full mt-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors"
-              >
-                Apply Filters
-              </button>
+              <div className="p-6 pt-2">
+                <button
+                  onClick={handleSearch}
+                  className="w-full py-3.5 bg-blue-600 text-white rounded-xl font-medium hover:bg-blue-700 
+          transition-colors flex items-center justify-center gap-2 shadow-sm"
+                >
+                  Apply Filters
+                </button>
+              </div>
             </div>
           </div>
-
           {/* Results Section */}
           <div className="flex-1">
             {isLoading ? (
