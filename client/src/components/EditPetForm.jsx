@@ -33,16 +33,42 @@ export default function EditPetForm({ pet, onUpdate, onCancel }) {
     },
   });
 
+  const validatePhotos = (files) => {
+    // Check file type and size first
+    for (const file of files) {
+      if (!["image/jpeg", "image/jpg", "image/png"].includes(file.type)) {
+        toast.error("Only JPG, JPEG, and PNG files are allowed");
+        return false;
+      }
+
+      if (file.size > 2 * 1024 * 1024) {
+        toast.error("Photos must be less than 2MB");
+        return false;
+      }
+    }
+
+    // Then check length if photos are being updated
+    if (files.length > 0 && (files.length < 2 || files.length > 5)) {
+      toast.error("Please select 2-5 photos");
+      return false;
+    }
+
+    return true;
+  };
+
   const handlePhotoChange = (e) => {
     const files = Array.from(e.target.files);
-    setPhotos(files);
+    if (validatePhotos(files)) {
+      setPhotos(files);
+    } else {
+      e.target.value = ""; // Reset input
+      setPhotos([]); // Clear photos state
+    }
   };
 
   const onSubmit = async (data) => {
     try {
-      // Photo validation only if photos are selected (optional for edit)
-      if (photos.length > 0 && (photos.length < 2 || photos.length > 5)) {
-        toast.error("Please select 2-5 photos");
+      if (photos.length > 0 && !validatePhotos(photos)) {
         return;
       }
       const formData = new FormData();
@@ -454,10 +480,10 @@ export default function EditPetForm({ pet, onUpdate, onCancel }) {
                 <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-gray-300 rounded-xl cursor-pointer hover:border-blue-400 bg-white">
                   <div className="flex flex-col items-center justify-center">
                     <span className="text-sm text-gray-500">
-                      Drag & drop or click to upload
+                      Click to upload
                     </span>
                     <span className="text-xs text-gray-400 mt-1">
-                      JPEG, PNG (max 2MB each)
+                      JPG, JPEG, PNG (max 2MB each)
                     </span>
                   </div>
                   <input

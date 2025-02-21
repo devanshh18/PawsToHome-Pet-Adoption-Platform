@@ -31,7 +31,11 @@ const router = createBrowserRouter([
     children: [
       {
         index: true,
-        element: <Home />,
+        element: (
+          <PrivateRoute>
+            <Home />
+          </PrivateRoute>
+        ),
       },
       {
         path: "pets",
@@ -59,7 +63,11 @@ const router = createBrowserRouter([
       },
       {
         path: "guide",
-        element: <HowTo />,
+        element: (
+          <PrivateRoute>
+            <HowTo />
+          </PrivateRoute>
+        ),
       },
       {
         path: "posts",
@@ -71,13 +79,28 @@ const router = createBrowserRouter([
       },
       {
         path: "about-us",
-        element: <AboutUs />,
+        element: (
+          <PrivateRoute>
+            <AboutUs />
+          </PrivateRoute>
+        ),
       },
       {
         path: "legal",
-        element: <Legal />,
+        element: (
+          <PrivateRoute>
+            <Legal />
+          </PrivateRoute>
+        ),
       },
-      { path: "/pet/:id", element: <PetDetails /> },
+      {
+        path: "/pet/:id",
+        element: (
+          <PrivateRoute>
+            <PetDetails />
+          </PrivateRoute>
+        ),
+      },
     ],
   },
   {
@@ -109,9 +132,9 @@ const router = createBrowserRouter([
         ),
       },
       {
-        path: "shelter-panel",
+        path: "shelter-panel/*",
         element: (
-          <PrivateRoute>
+          <PrivateRoute allowedRoles={"shelter"}>
             <ShelterPanel />
           </PrivateRoute>
         ),

@@ -3,40 +3,23 @@ import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import Slider from "react-slick"; // Import react-slick
-import "slick-carousel/slick/slick.css"; 
+import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import {
   ChevronLeftIcon,
   ChevronRightIcon,
   MagnifyingGlassIcon,
 } from "@heroicons/react/24/solid";
-
-const indianCities = [
-  "Mumbai",
-  "Delhi",
-  "Bangalore",
-  "Hyderabad",
-  "Ahmedabad",
-  "Chennai",
-  "Kolkata",
-  "Surat",
-  "Pune",
-  "Jaipur",
-  "Lucknow",
-  "Kanpur",
-  "Nagpur",
-  "Visakhapatnam",
-  "Indore",
-];
+import { indianStates, indianCities } from "../utils/location";
 
 export default function Home() {
   const navigate = useNavigate();
   const { user } = useSelector((state) => state.auth);
   const [activeTab, setActiveTab] = useState("dogs");
   const [filters, setFilters] = useState({
-    location: "Any",
+    location: "Ahmedabad, Gujarat",
     age: "Any",
-    sex: "Any",
+    gender: "Any",
   });
 
   const featuredPets = [
@@ -54,7 +37,47 @@ export default function Home() {
     if (!user) {
       navigate("/login");
     } else {
-      navigate("/pets");
+      // If shelter/rescue tab is selected, navigate to shelters page
+      if (activeTab === "shelter/rescues") {
+        const searchParams = new URLSearchParams();
+        if (filters.location !== "Any") {
+          const [city, state] = filters.location.split(", ");
+          searchParams.append("city", city);
+          searchParams.append("state", state);
+        }
+        navigate(`/shelters?${searchParams.toString()}`);
+        return;
+      }
+
+      // For pet searches
+      const searchParams = new URLSearchParams();
+
+      // Add species based on active tab
+      const speciesMap = {
+        dogs: "Dog",
+        cats: "Cat",
+        "other pets": "Other",
+      };
+      if (speciesMap[activeTab]) {
+        searchParams.append("species", speciesMap[activeTab]);
+      }
+
+      // Add other filters
+      Object.entries(filters).forEach(([key, value]) => {
+        if (value !== "Any") {
+          if (key === "location") {
+            const [city, state] = value.split(", ");
+            searchParams.append("city", city);
+            searchParams.append("state", state);
+          } else if (key === "age") {
+            searchParams.append("ageRange", value);
+          } else if (key === "gender") {
+            searchParams.append("gender", value);
+          }
+        }
+      });
+
+      navigate(`/pets?${searchParams.toString()}`);
     }
   };
 
@@ -159,7 +182,7 @@ export default function Home() {
               <div className="flex gap-4">
                 {["dogs", "cats"].includes(activeTab) ? (
                   <>
-                    {["location", "age", "sex"].map((field) => (
+                    {["location", "age", "gender"].map((field) => (
                       <motion.div
                         key={field}
                         className="flex-1 relative"
@@ -169,25 +192,34 @@ export default function Home() {
                           {field.charAt(0).toUpperCase() + field.slice(1)}
                         </span>
                         <select
-                          className="w-full pt-5 pb-2 px-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          className="w-full pt-5 pb-2 px-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent focus:outline-none"
                           value={filters[field]}
                           onChange={(e) =>
                             setFilters({ ...filters, [field]: e.target.value })
                           }
                         >
-                          <option value="Any">Any</option>
+                          {field !== "location" && (
+                            <option value="Any">Any</option>
+                          )}
                           {field === "location"
-                            ? indianCities.map((city) => (
-                                <option key={city} value={city}>
-                                  {city}
-                                </option>
-                              ))
+                            ? indianStates.map((state) =>
+                                indianCities[state].map((city) => (
+                                  <option
+                                    key={`${city}-${state}`}
+                                    value={`${city}, ${state}`}
+                                  >
+                                    {`${city}, ${state}`}
+                                  </option>
+                                ))
+                              )
                             : field === "age"
-                            ? ["Puppy", "Young", "Adult"].map((opt) => (
-                                <option key={opt} value={opt}>
-                                  {opt}
-                                </option>
-                              ))
+                            ? ["baby", "young", "adult", "senior"].map(
+                                (opt) => (
+                                  <option key={opt} value={opt}>
+                                    {opt.charAt(0).toUpperCase() + opt.slice(1)}
+                                  </option>
+                                )
+                              )
                             : ["Male", "Female"].map((opt) => (
                                 <option key={opt} value={opt}>
                                   {opt}
@@ -206,18 +238,22 @@ export default function Home() {
                       Location
                     </span>
                     <select
-                      className="w-full pt-5 pb-2 px-3 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                      className="w-full pt-5 pb-2 px-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent focus:outline-none"
                       value={filters.location}
                       onChange={(e) =>
                         setFilters({ ...filters, location: e.target.value })
                       }
                     >
-                      <option value="Any">Any</option>
-                      {indianCities.map((city) => (
-                        <option key={city} value={city}>
-                          {city}
-                        </option>
-                      ))}
+                      {indianStates.map((state) =>
+                        indianCities[state].map((city) => (
+                          <option
+                            key={`${city}-${state}`}
+                            value={`${city}, ${state}`}
+                          >
+                            {`${city}, ${state}`}
+                          </option>
+                        ))
+                      )}
                     </select>
                   </motion.div>
                 )}
@@ -322,11 +358,11 @@ export default function Home() {
               className="text-lg leading-relaxed text-gray-700 bg-white p-8 rounded-xl shadow-sm border-l-4 border-blue-500"
               whileHover={{ scale: 1.02 }}
             >
-              Adopting a pet is more than just finding a furry friend; it’s about
-              giving a second chance to a life in need. Every year, countless
-              animals end up in shelters waiting for a loving home. By adopting,
-              you’re not only saving a life but also making space for another pet
-              to be cared for.
+              Adopting a pet is more than just finding a furry friend; it’s
+              about giving a second chance to a life in need. Every year,
+              countless animals end up in shelters waiting for a loving home. By
+              adopting, you’re not only saving a life but also making space for
+              another pet to be cared for.
             </motion.div>
           </motion.div>
 

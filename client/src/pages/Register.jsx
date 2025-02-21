@@ -1,224 +1,6 @@
-/*import { useState } from "react";
-import { Link } from "react-router-dom";
-import { useForm } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
-import { registerUser, registerShelter } from "../features/auth/authService";
-import { toast } from "react-toastify";
-
-export default function Register() {
-  const [step, setStep] = useState(1);
-  const [userType, setUserType] = useState("adopter");
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm();
-  const navigate = useNavigate();
-
-  const onSubmit = async (data) => {
-    try {
-      if (userType === "shelter" && step === 1) {
-        setStep(2);
-        return;
-      }
-
-      if (userType === "shelter") {
-        const formData = new FormData();
-        Object.keys(data).forEach((key) => {
-          if (key === "licenseDocument") {
-            formData.append(key, data[key][0]);
-          } else {
-            formData.append(key, data[key]);
-          }
-        });
-        await registerShelter(formData);
-        toast.success("Registration submitted for approval!");
-      } else {
-        await registerUser(data);
-        toast.success("Registration successful! Please login.");
-      }
-      navigate("/");
-    } catch (error) {
-      toast.error(error.response?.data?.message || "Registration failed");
-    }
-  };
-
-  return (
-    <div className="max-w-md mx-auto mt-10 p-6 bg-white rounded-lg shadow-md">
-      <h1 className="text-2xl font-bold mb-4 text-center">Register</h1>
-
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-        {step === 1 && (
-          <>
-            <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Register as
-              </label>
-              <select
-                className="w-full p-2 border rounded"
-                value={userType}
-                onChange={(e) => setUserType(e.target.value)}
-              >
-                <option value="adopter">Pet Adopter</option>
-                <option value="shelter">Pet Shelter</option>
-              </select>
-            </div>
-
-            <div>
-              <input
-                {...register("name", { required: "Name is required" })}
-                className="w-full p-2 border rounded"
-                placeholder="Full Name"
-              />
-              {errors.name && (
-                <p className="text-red-500 text-sm">{errors.name.message}</p>
-              )}
-            </div>
-
-            <div>
-              <input
-                {...register("email", {
-                  required: "Email is required",
-                  pattern: {
-                    value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                    message: "Invalid email address",
-                  },
-                })}
-                className="w-full p-2 border rounded"
-                placeholder="Email"
-                type="email"
-              />
-              {errors.email && (
-                <p className="text-red-500 text-sm">{errors.email.message}</p>
-              )}
-            </div>
-
-            <div>
-              <input
-                {...register("phoneNo", {
-                  required: "Phone number is required",
-                  pattern: {
-                    value: /^\d{10}$/,
-                    message: "Phone number must be 10 digits",
-                  },
-                })}
-                className="w-full p-2 border rounded"
-                placeholder="Phone Number"
-              />
-              {errors.phoneNo && (
-                <p className="text-red-500 text-sm">{errors.phoneNo.message}</p>
-              )}
-            </div>
-
-            <div>
-              <input
-                {...register("password", {
-                  required: "Password is required",
-                  minLength: {
-                    value: 6,
-                    message:
-                      "Min 6 chars, 1 uppercase, 1 lowercase, 1 number, 1 special char",
-                  },
-                })}
-                className="w-full p-2 border rounded"
-                placeholder="Password"
-                type="password"
-              />
-              {errors.password && (
-                <p className="text-red-500 text-sm">
-                  {errors.password.message}
-                </p>
-              )}
-            </div>
-
-            <button
-              type="submit"
-              className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600"
-            >
-              {userType === "shelter" ? "Next" : "Register"}
-            </button>
-          </>
-        )}
-
-        {step === 2 && userType === "shelter" && (
-          <>
-            <div>
-              <input
-                {...register("shelterName", {
-                  required: "Shelter name is required",
-                })}
-                className="w-full p-2 border rounded"
-                placeholder="Shelter Name"
-              />
-              {errors.shelterName && (
-                <p className="text-red-500 text-sm">
-                  {errors.shelterName.message}
-                </p>
-              )}
-            </div>
-
-            <div>
-              <textarea
-                {...register("address", { required: "Address is required" })}
-                className="w-full p-2 border rounded"
-                placeholder="Shelter Address"
-                rows="3"
-              />
-              {errors.address && (
-                <p className="text-red-500 text-sm">{errors.address.message}</p>
-              )}
-            </div>
-
-            <div>
-              <label className="block text-sm text-gray-600 mb-2">
-                License Document
-              </label>
-              <input
-                type="file"
-                {...register("licenseDocument", {
-                  required: "License document is required",
-                })}
-                className="w-full p-2 border rounded"
-                accept="image/*"
-              />
-              {errors.licenseDocument && (
-                <p className="text-red-500 text-sm">
-                  {errors.licenseDocument.message}
-                </p>
-              )}
-            </div>
-
-            <div className="flex gap-2">
-              <button
-                type="button"
-                onClick={() => setStep(1)}
-                className="flex-1 bg-gray-500 text-white p-2 rounded hover:bg-gray-600"
-              >
-                Back
-              </button>
-              <button
-                type="submit"
-                className="flex-1 bg-blue-500 text-white p-2 rounded hover:bg-blue-600"
-              >
-                Register Shelter
-              </button>
-            </div>
-          </>
-        )}
-      </form>
-
-      <p className="mt-4 text-center">
-        Already have an account?{" "}
-        <Link to="/" className="text-blue-500">
-          Login
-        </Link>
-      </p>
-    </div>
-  );
-} */
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { registerUser, registerShelter } from "../features/auth/authService";
 import { toast } from "react-toastify";
@@ -248,6 +30,7 @@ export default function Register() {
     formState: { errors },
     setValue,
     trigger,
+    control,
   } = useForm();
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -257,14 +40,6 @@ export default function Register() {
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      if (file.size > 2 * 1024 * 1024) {
-        toast.error("File size must be less than 2MB");
-        return;
-      }
-      if (!["image/jpeg", "image/png", "image/jpg"].includes(file.type)) {
-        toast.error("Only JPG, JPEG, and PNG files are allowed");
-        return;
-      }
       setLicenseFile(file);
       setValue("licenseDocument", [file]); // Set value for react-hook-form
       trigger("licenseDocument"); // Trigger validation
@@ -287,7 +62,7 @@ export default function Register() {
     e.stopPropagation();
     setDragActive(false);
     if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-      handleFileChange({ target: { files: e.dataTransfer.files } });
+      handleFileChange({ target: { files: e.dataTransfer.files } }); // Use handleFileChange for consistency
     }
   };
 
@@ -302,6 +77,8 @@ export default function Register() {
   const onSubmit = async (data) => {
     try {
       if (userType === "shelter" && step === 1) {
+        const isStepValid = await trigger(); // Trigger validation for current fields
+        if (!isStepValid) return;
         setStep(2);
         return;
       }
@@ -702,52 +479,91 @@ export default function Register() {
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     License Document
                   </label>
-                  <div
-                    onDragEnter={handleDrag}
-                    onDragLeave={handleDrag}
-                    onDragOver={handleDrag}
-                    onDrop={handleDrop}
-                    className={`border-2 border-dashed rounded-lg p-6 text-center transition-colors ${
-                      dragActive
-                        ? "border-indigo-500 bg-indigo-50"
-                        : "border-gray-300"
-                    }`}
-                  >
-                    {licenseFile ? (
-                      <div className="flex items-center justify-between bg-gray-50 p-3 rounded-lg">
-                        <span className="text-sm text-gray-700 truncate">
-                          {licenseFile.name}
-                        </span>
-                        <button
-                          type="button"
-                          onClick={removeFile}
-                          className="text-gray-500 hover:text-red-500"
+                  <Controller
+                    name="licenseDocument"
+                    control={control}
+                    rules={{
+                      required: "License document is required",
+                      validate: (value) => {
+                        const file = value?.[0];
+                        if (file) {
+                          if (file.size > 2 * 1024 * 1024) {
+                            return "File size must be less than 2MB";
+                          }
+                          if (
+                            !["image/jpeg", "image/png", "image/jpg"].includes(
+                              file.type
+                            )
+                          ) {
+                            return "Only JPG, JPEG, and PNG files are allowed";
+                          }
+                        }
+                        return true;
+                      },
+                    }}
+                    render={({
+                      field: { onChange, value },
+                      fieldState: { error },
+                    }) => (
+                      <div>
+                        <div
+                          onDragEnter={handleDrag}
+                          onDragLeave={handleDrag}
+                          onDragOver={handleDrag}
+                          onDrop={handleDrop}
+                          className={`border-2 border-dashed rounded-lg p-6 text-center transition-colors ${
+                            dragActive
+                              ? "border-indigo-500 bg-indigo-50"
+                              : "border-gray-300"
+                          }`}
                         >
-                          <FiX className="w-5 h-5" />
-                        </button>
+                          {licenseFile ? (
+                            <div className="flex items-center justify-between bg-gray-50 p-3 rounded-lg">
+                              <span className="text-sm text-gray-700 truncate">
+                                {licenseFile.name}
+                              </span>
+                              <button
+                                type="button"
+                                onClick={removeFile}
+                                className="text-gray-500 hover:text-red-500"
+                              >
+                                <FiX className="w-5 h-5" />
+                              </button>
+                            </div>
+                          ) : (
+                            <>
+                              <FiUploadCloud className="mx-auto h-8 w-8 text-gray-400 mb-2" />
+                              <p className="text-sm text-gray-600">
+                                Drag and drop or{" "}
+                                <label
+                                  htmlFor="licenseDocument"
+                                  className="text-indigo-600 cursor-pointer hover:text-indigo-500"
+                                >
+                                  browse files
+                                  <input
+                                    type="file"
+                                    id="licenseDocument"
+                                    onChange={handleFileChange} // Use handleFileChange here
+                                    className="hidden"
+                                    accept="image/jpeg,image/png,image/jpg"
+                                  />
+                                </label>
+                              </p>
+                              <p className="text-xs text-gray-500 mt-1">
+                                JPG, JPEG, PNG up to 2MB
+                              </p>
+                            </>
+                          )}
+                        </div>
+                        {error && (
+                          <p className="text-red-500 text-sm mt-2 flex items-center gap-1">
+                            <FiAlertCircle className="w-4 h-4" />
+                            {error.message}
+                          </p>
+                        )}
                       </div>
-                    ) : (
-                      <>
-                        <FiUploadCloud className="mx-auto h-8 w-8 text-gray-400 mb-2" />
-                        <p className="text-sm text-gray-600">
-                          Drag and drop or{" "}
-                          <label className="text-indigo-600 cursor-pointer hover:text-indigo-500">
-                            browse files
-                            <input
-                              type="file"
-                              {...register("licenseDocument")}
-                              onChange={handleFileChange}
-                              className="hidden"
-                              accept="image/jpeg,image/png,image/jpg"
-                            />
-                          </label>
-                        </p>
-                        <p className="text-xs text-gray-500 mt-1">
-                          JPG, JPEG, PNG up to 2MB
-                        </p>
-                      </>
                     )}
-                  </div>
+                  />
                 </div>
               </div>
             )}

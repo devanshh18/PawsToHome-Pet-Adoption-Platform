@@ -116,8 +116,6 @@ export const deletePet = async (req, res, next) => {
   }
 };
 
-
-
 // Get pet by ID with shelter details
 export const searchPets = async (req, res, next) => {
   try {
@@ -156,19 +154,34 @@ export const searchPets = async (req, res, next) => {
 
     // Handle age range
     if (ageRange) {
-      switch (ageRange) {
-        case "baby":
-          petQuery["age.years"] = 0;
-          break;
-        case "young":
-          petQuery["age.years"] = { $gte: 1, $lt: 3 };
-          break;
-        case "adult":
-          petQuery["age.years"] = { $gte: 3, $lt: 8 };
-          break;
-        case "senior":
-          petQuery["age.years"] = { $gte: 8 };
-          break;
+      // Convert string to array if needed
+      const ageRanges = Array.isArray(ageRange)
+        ? ageRange
+        : ageRange.split(",");
+
+      // Create an OR condition for multiple age ranges
+      const ageQueries = ageRanges
+        .map((range) => {
+          switch (range) {
+            case "baby":
+              return {
+                $and: [{ "age.years": 0 }, { "age.months": { $gt: 0 } }],
+              };
+            case "young":
+              return { "age.years": { $gte: 1, $lte: 3 } };
+            case "adult":
+              return { "age.years": { $gte: 4, $lte: 7 } };
+            case "senior":
+              return { "age.years": { $gte: 8 } };
+            default:
+              return null;
+          }
+        })
+        .filter((query) => query !== null);
+
+      // Add the age query to petQuery if there are valid ranges
+      if (ageQueries.length > 0) {
+        petQuery["$or"] = ageQueries;
       }
     }
 

@@ -18,7 +18,6 @@ import AdoptionRequestsTab from "../components/AdoptionRequestsTab";
 import ShelterProfile from "../components/ShelterProfile";
 import LoadingSpinner from "../components/LoadingSpinner";
 
-
 export default function ShelterPanel() {
   const { user } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
@@ -34,15 +33,32 @@ export default function ShelterPanel() {
     { name: "Profile", icon: FiUser },
   ];
 
-  const handleLogout = () => {
-    dispatch(logout());
-    navigate("/login");
+  const handleLogout = async () => {
+    try {
+      // Call logout API endpoint
+      await fetch("/api/auth/logout", {
+        method: "POST",
+        credentials: "include",
+      });
+
+      // Clear Redux state
+      dispatch(logout());
+
+      // Navigate to login
+      navigate("/login");
+    } catch (error) {
+      console.error("Logout failed:", error);
+    }
   };
 
   useEffect(() => {
-    if (user) setIsLoading(false);
-  }, [user]);
-
+    if (!user) {
+      navigate("/login");
+      return;
+    }
+    setIsLoading(false);
+  }, [user, navigate]);
+  
   return (
     <div className=" min-h-screen bg-gray-50/95">
       {isLoading && <LoadingSpinner />}

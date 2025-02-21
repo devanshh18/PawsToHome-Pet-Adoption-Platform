@@ -3,7 +3,7 @@ export function formatPetAge(years, months) {
   let category = "";
 
   if (years === 0 && months > 0) {
-    category = months <= 6 ? "Baby" : "Kitten/Puppy";
+    category = "Baby";
   } else if (years >= 1 && years <= 3) {
     category = "Young";
   } else if (years >= 4 && years <= 7) {
