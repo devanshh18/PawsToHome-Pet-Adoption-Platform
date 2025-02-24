@@ -305,19 +305,6 @@ export default function PetSearch() {
                     className="w-full px-6 py-4 bg-transparent outline-none text-gray-900 placeholder-gray-400"
                   />
                   <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none">
-                    <svg
-                      className="w-4 h-4 text-gray-400"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        d="M19 9l-7 7-7-7"
-                      />
-                    </svg>
                   </div>
                 </div>
 
@@ -581,7 +568,7 @@ export default function PetSearch() {
                             <span>
                               {pet.gender}, {pet.formattedAge.split(",")[0]}
                             </span>
-                            <span className="text-blue-600 font-medium">
+                            <span className="text-gray-800 font-medium">
                               {pet.formattedAge.split(",")[1].trim()}
                             </span>
                           </div>
