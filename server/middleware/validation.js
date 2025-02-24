@@ -275,13 +275,13 @@ export const addPetValidation = [
   ...commonPetValidations(false),
   body("photos").custom((value, { req }) => {
     if (!req.files || !req.files.photos) {
-      throw new Error("At least 2 photos are required");
+      throw new Error("At least 1 photos are required");
     }
     const photos = Array.isArray(req.files.photos)
       ? req.files.photos
       : [req.files.photos];
-    if (photos.length < 2 || photos.length > 5) {
-      throw new Error("Minimum 2 and maximum 5 photos allowed");
+    if (photos.length < 1 || photos.length > 4) {
+      throw new Error("Minimum 1 and maximum 4 photos allowed");
     }
     photos.forEach((photo) => {
       if (!photo.mimetype.startsWith("image/")) {
@@ -308,8 +308,8 @@ export const updatePetValidation = [
       const photos = Array.isArray(req.files.photos)
         ? req.files.photos
         : [req.files.photos];
-      if (photos.length < 2 || photos.length > 5) {
-        throw new Error("Minimum 2 and maximum 5 photos allowed");
+      if (photos.length < 1 || photos.length > 4) {
+        throw new Error("Minimum 1 and maximum 4 photos allowed");
       }
       photos.forEach((photo) => {
         if (!photo.mimetype.startsWith("image/")) {

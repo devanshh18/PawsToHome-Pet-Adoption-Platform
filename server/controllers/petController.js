@@ -7,7 +7,7 @@ export const addPet = async (req, res, next) => {
   try {
     // Check for photos
     if (!req.files || !req.files.photos) {
-      throw createError(400, "At least 2 photos are required");
+      throw createError(400, "At least 1 photo is required");
     }
 
     const photos = Array.isArray(req.files.photos)

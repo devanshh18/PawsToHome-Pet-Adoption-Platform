@@ -48,8 +48,8 @@ export default function EditPetForm({ pet, onUpdate, onCancel }) {
     }
 
     // Then check length if photos are being updated
-    if (files.length > 0 && (files.length < 2 || files.length > 5)) {
-      toast.error("Please select 2-5 photos");
+    if (files.length > 0 && (files.length < 1 || files.length > 4)) {
+      toast.error("Please select 1-4 photos");
       return false;
     }
 
@@ -474,7 +474,7 @@ export default function EditPetForm({ pet, onUpdate, onCancel }) {
             </div>
             <div className="space-y-4">
               <label className="block text-sm font-medium text-gray-600">
-                Update Photos (2-5 required)
+                Update Photos (1-4 required)
               </label>
               <div className="flex items-center justify-center w-full">
                 <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-gray-300 rounded-xl cursor-pointer hover:border-blue-400 bg-white">

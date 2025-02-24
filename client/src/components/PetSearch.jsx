@@ -1,4 +1,5 @@
 import { useState, useMemo, useEffect, useCallback } from "react";
+import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
 import { searchPetsByLocation } from "../features/pets/petSlice";
 import { Link } from "react-router-dom";
@@ -6,6 +7,7 @@ import LoadingSpinner from "./LoadingSpinner";
 import { toast } from "react-toastify";
 import { indianCities, indianStates } from "../utils/location";
 import { useSearchParams } from "react-router-dom";
+import { motion } from "framer-motion";
 import {
   FaSearch,
   FaPaw,
@@ -15,6 +17,7 @@ import {
   FaHeart,
   FaDog,
   FaVenusMars,
+  FaMapMarkerAlt,
 } from "react-icons/fa";
 
 export default function PetSearch() {
@@ -23,6 +26,10 @@ export default function PetSearch() {
   const { searchResults, isLoading, error } = useSelector(
     (state) => state.pets
   );
+  const [currentPage, setCurrentPage] = useState(1);
+  const petsPerPage = 21;
+  const [displayedPets, setDisplayedPets] = useState([]);
+  const [totalPets, setTotalPets] = useState(0);
 
   // Get city from URL params
   const cityFromUrl = searchParams.get("city");
@@ -111,6 +118,17 @@ export default function PetSearch() {
     }
   };
 
+  // Add this function to handle pagination logic
+  const paginatePets = useCallback(
+    (results) => {
+      setTotalPets(results.length);
+      const indexOfLastPet = currentPage * petsPerPage;
+      const indexOfFirstPet = indexOfLastPet - petsPerPage;
+      return results.slice(indexOfFirstPet, indexOfLastPet);
+    },
+    [currentPage, petsPerPage]
+  );
+
   const handleSearch = useCallback(
     async (isMainSearch = false) => {
       if (!selectedLocation) return;
@@ -162,6 +180,13 @@ export default function PetSearch() {
 
         await dispatch(searchPetsByLocation(apiFilters)).unwrap();
         setHasSearched(true);
+
+        const response = await dispatch(
+          searchPetsByLocation(apiFilters)
+        ).unwrap();
+        setDisplayedPets(paginatePets(response));
+        setHasSearched(true);
+        setCurrentPage(1); // Reset to first page on new search
       } catch (error) {
         toast.error(error || "Failed to search pets");
       }
@@ -169,12 +194,55 @@ export default function PetSearch() {
     [selectedLocation, filters, dispatch]
   );
 
+  // Add this function to handle page changes
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
+    setDisplayedPets(paginatePets(searchResults));
+  };
+
+  // Add this function to generate page numbers
+  const getPageNumbers = () => {
+    const totalPages = Math.ceil(totalPets / petsPerPage);
+    const current = currentPage;
+    const pages = [];
+
+    if (totalPages <= 7) {
+      for (let i = 1; i <= totalPages; i++) {
+        pages.push(i);
+      }
+    } else {
+      if (current <= 3) {
+        for (let i = 1; i <= 5; i++) pages.push(i);
+        pages.push("...");
+        pages.push(totalPages);
+      } else if (current >= totalPages - 2) {
+        pages.push(1);
+        pages.push("...");
+        for (let i = totalPages - 4; i <= totalPages; i++) pages.push(i);
+      } else {
+        pages.push(1);
+        pages.push("...");
+        for (let i = current - 1; i <= current + 1; i++) pages.push(i);
+        pages.push("...");
+        pages.push(totalPages);
+      }
+    }
+
+    return pages;
+  };
+
   // Update automatic search effect
   useEffect(() => {
     if (selectedLocation) {
       handleSearch(true); // Pass true for main search
     }
   }, [selectedLocation, filters.species]);
+
+  useEffect(() => {
+    if (searchResults) {
+      setDisplayedPets(paginatePets(searchResults));
+    }
+  }, [currentPage, searchResults, paginatePets]);
 
   return (
     <div className="min-h-screen">
@@ -461,64 +529,121 @@ export default function PetSearch() {
                 {error}
               </div>
             ) : hasSearched ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {searchResults?.map((pet) => (
-                  <Link
-                    key={pet._id}
-                    to={`/pet/${pet._id}`}
-                    className="group bg-white rounded-xl shadow-sm hover:shadow-md transition-all overflow-hidden"
-                  >
-                    <div className="relative h-48 bg-gray-100 overflow-hidden">
-                      <img
-                        src={pet.photos[0]}
-                        alt={pet.name}
-                        className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/40" />
-                    </div>
-                    <div className="p-4 space-y-3">
-                      <h3 className="text-lg font-semibold text-gray-800">
-                        {pet.name}
-                      </h3>
-                      <div className="flex items-center gap-2 text-sm text-gray-600">
-                        <FaPaw className="text-blue-600" />
-                        <span>{pet.breed}</span>
-                        <span>•</span>
-                        <span>{pet.formattedAge}</span>
-                      </div>
-                      <div className="flex items-center gap-2 text-sm text-gray-600">
-                        <FaChild
-                          className={`${
-                            pet.goodWithKids ? "text-green-600" : "text-red-600"
-                          }`}
-                        />
-                        <FaSyringe
-                          className={`${
-                            pet.vaccinationStatus
-                              ? "text-green-600"
-                              : "text-red-600"
-                          }`}
+              <>
+                {/* Results Count */}
+                <div className="flex justify-between items-center mb-6">
+                  <div className="text-gray-600">
+                    Showing{" "}
+                    {Math.min((currentPage - 1) * petsPerPage + 1, totalPets)} -{" "}
+                    {Math.min(currentPage * petsPerPage, totalPets)} of{" "}
+                    {totalPets} available pets
+                  </div>
+                </div>
+                {/* Pet Grid */}
+                <motion.div
+                  key={currentPage}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ duration: 0.3 }}
+                  className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+                >
+                  {displayedPets?.map((pet) => (
+                    <Link
+                      key={pet._id}
+                      to={`/pet/${pet._id}`}
+                      className="bg-white rounded-2xl shadow-md hover:shadow-lg hover:bg-blue-50 transition-all duration-300 overflow-hidden flex flex-col"
+                    >
+                      {/* Image Container */}
+                      <div className="h-[280px] overflow-hidden">
+                        <img
+                          src={pet.photos[0]}
+                          alt={pet.name}
+                          className="w-full h-full object-cover transition-transform duration-500 hover:scale-110"
                         />
                       </div>
-                      <div className="flex flex-wrap gap-2">
-                        {pet.temperament?.split(", ").map((temp) => (
-                          <span
-                            key={temp}
-                            className="px-2.5 py-1 bg-blue-50 text-blue-700 text-xs rounded-full capitalize"
-                          >
-                            {temp}
-                          </span>
-                        ))}
+
+                      {/* Content Container */}
+                      <div className="p-4 flex-1">
+                        {/* Pet Name */}
+                        <h3 className="text-lg font-semibold text-gray-900 mb-1 font-display">
+                          {pet.name}
+                        </h3>
+
+                        {/* Breed */}
+                        <p className="text-gray-600 text-sm mb-2">
+                          {pet.breed}
+                        </p>
+
+                        {/* Details */}
+                        <div className="space-y-1.5 text-sm text-gray-500">
+                          {/* Gender & Age */}
+                          <div className="flex flex-col">
+                            <span>
+                              {pet.gender}, {pet.formattedAge.split(",")[0]}
+                            </span>
+                            <span className="text-blue-600 font-medium">
+                              {pet.formattedAge.split(",")[1].trim()}
+                            </span>
+                          </div>
+
+                          {/* Location */}
+                          <div className="flex items-center gap-1.5">
+                            <FaMapMarkerAlt className="text-gray-400" />
+                            <span>
+                              {pet.shelterId.city}, {pet.shelterId.state}
+                            </span>
+                          </div>
+                        </div>
                       </div>
-                    </div>
-                  </Link>
-                ))}
-              </div>
+                    </Link>
+                  ))}
+                </motion.div>
+                {/* Pagination */}
+                {totalPets > petsPerPage && (
+                  <div className="mt-8 flex justify-center items-center gap-2">
+                    <button
+                      onClick={() => handlePageChange(currentPage - 1)}
+                      disabled={currentPage === 1}
+                      className="p-2 rounded-lg hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      <FaChevronLeft className="text-gray-600" />
+                    </button>
+
+                    {getPageNumbers().map((page, index) => (
+                      <button
+                        key={index}
+                        onClick={() =>
+                          typeof page === "number" && handlePageChange(page)
+                        }
+                        className={`px-4 py-2 rounded-lg ${
+                          currentPage === page
+                            ? "bg-blue-600 text-white"
+                            : typeof page === "number"
+                            ? "hover:bg-gray-100 text-gray-600"
+                            : "text-gray-400 cursor-default"
+                        }`}
+                      >
+                        {page}
+                      </button>
+                    ))}
+
+                    <button
+                      onClick={() => handlePageChange(currentPage + 1)}
+                      disabled={
+                        currentPage === Math.ceil(totalPets / petsPerPage)
+                      }
+                      className="p-2 rounded-lg hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      <FaChevronRight className="text-gray-600" />
+                    </button>
+                  </div>
+                )}
+              </>
             ) : (
-              <div className="text-center py-12 bg-white rounded-xl shadow-sm">
+              <div className="text-center py-25 bg-white rounded-xl shadow-sm h-full">
                 <div className="max-w-md mx-auto">
-                  <div className="mb-4 text-6xl">🐾</div>
-                  <h3 className="text-xl font-semibold text-gray-800">
+                  <div className="mb-4 text-7xl">🐾</div>
+                  <h3 className="text-2xl font-semibold text-gray-800">
                     Start Your Pet Search
                   </h3>
                   <p className="text-gray-500 mt-2">
