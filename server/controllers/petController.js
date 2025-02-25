@@ -1,5 +1,5 @@
 import createError from "http-errors";
-import Pet from "../models/Pet.js";
+import Pet from "../models/Pets.js";
 import { uploadPetToCloudianry } from "../utils/cloudinary.js";
 import Shelter from "../models/Shelter.js";
 // Add a new pet
@@ -7,7 +7,7 @@ export const addPet = async (req, res, next) => {
   try {
     // Check for photos
     if (!req.files || !req.files.photos) {
-      throw createError(400, "At least 1 photo is required");
+      throw createError(400, "At least 1 photos are required");
     }
 
     const photos = Array.isArray(req.files.photos)
@@ -138,10 +138,10 @@ export const searchPets = async (req, res, next) => {
 
     const shelterIds = await Shelter.find(shelterQuery).distinct("_id");
 
-    // Build pet query
+    // Build pet query to only show Available pets
     const petQuery = {
       shelterId: { $in: shelterIds },
-      status: "Available",
+      status: "Available", // Only show Available pets
     };
 
     // Add additional filters
@@ -202,7 +202,10 @@ export const searchPets = async (req, res, next) => {
 
 export const getPetById = async (req, res, next) => {
   try {
-    const pet = await Pet.findById(req.params.id).populate({
+    const pet = await Pet.findOne({
+      _id: req.params.id,
+      status: "Available",
+    }).populate({
       path: "shelterId",
       select: "name email phoneNo shelterName city state address",
       match: { status: "approved" },

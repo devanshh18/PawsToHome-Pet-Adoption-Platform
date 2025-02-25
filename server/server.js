@@ -8,6 +8,7 @@ import cookieParser from "cookie-parser";
 import authRoutes from "./routes/auth.js";
 import adminRoutes from "./routes/admin.js";
 import petRoutes from "./routes/petRoute.js";
+import adoptionRoutes from "./routes/adoptionRoutes.js";
 import { requestLogger } from "./middleware/requestLogger.js";
 import logger from "./utils/logger.js";
 
@@ -47,6 +48,7 @@ app.use(requestLogger);
 app.use("/api/auth", authRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/pets", petRoutes);
+app.use("/api/adoptions", adoptionRoutes);
 
 // 404 handler
 app.use((req, res, next) => {

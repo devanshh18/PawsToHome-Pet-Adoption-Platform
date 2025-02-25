@@ -96,90 +96,6 @@ export const resetPasswordValidation = [
   validate,
 ];
 
-// export const addPetValidation = [
-//   body("name")
-//     .trim()
-//     .notEmpty()
-//     .withMessage("Pet name is required")
-//     .isLength({ max: 50 })
-//     .withMessage("Name cannot exceed 50 characters"),
-
-//   body("age.years")
-//     .isInt({ min: 0 })
-//     .withMessage("Years must be a positive number"),
-
-//   body("age.months")
-//     .isInt({ min: 0, max: 11 })
-//     .withMessage("Months must be between 0 and 11"),
-
-//   body("species").isIn(["Dog", "Cat", "Other"]).withMessage("Invalid species"),
-
-//   body("breed").trim().notEmpty().withMessage("Breed is required"),
-
-//   body("gender").isIn(["Male", "Female"]).withMessage("Invalid gender"),
-
-//   body("color").trim().notEmpty().withMessage("Color is required"),
-
-//   body("weight").trim().notEmpty().withMessage("Weight is required"),
-
-//   body("vaccinationStatus")
-//     .isBoolean()
-//     .withMessage("Vaccination status must be true or false"),
-
-//   body("temperament")
-//     .isArray()
-//     .withMessage("Temperament must be an array")
-//     .custom((value) => {
-//       if (!Array.isArray(value)) {
-//         throw new Error("Temperament must be an array");
-//       }
-//       const validTemperaments = ["calm", "energetic", "friendly", "shy"];
-//       return value.every((temp) => validTemperaments.includes(temp));
-//     }),
-
-//   body("goodWithKids")
-//     .isBoolean()
-//     .withMessage("Good with kids must be true or false"),
-
-//   body("goodWithPets")
-//     .isBoolean()
-//     .withMessage("Good with pets must be true or false"),
-
-//   body("description").trim().notEmpty().withMessage("Description is required"),
-//   body("photos").custom((value, { req }) => {
-//     // Debug log
-//     console.log("Files received:", req.files);
-
-//     if (!req.files || !req.files.photos) {
-//       throw new Error("At least 2 photos are required");
-//     }
-
-//     // Ensure photos is always an array
-//     const photos = Array.isArray(req.files.photos)
-//       ? req.files.photos
-//       : [req.files.photos];
-
-//     console.log("Number of photos:", photos.length);
-
-//     if (photos.length < 2 || photos.length > 5) {
-//       throw new Error("Minimum 2 and maximum 5 photos allowed");
-//     }
-
-//     for (const photo of photos) {
-//       console.log("Photo type:", photo.mimetype);
-//       if (!photo.mimetype.startsWith("image/")) {
-//         throw new Error("Please upload only image files");
-//       }
-//       if (photo.size > 2 * 1024 * 1024) {
-//         throw new Error("Each photo must be less than 2MB");
-//       }
-//     }
-
-//     return true;
-//   }),
-
-//   validate,
-// ];
 const commonPetValidations = (isUpdate = false) => {
   const opt = isUpdate ? { optional: true } : {};
   return [
@@ -275,7 +191,7 @@ export const addPetValidation = [
   ...commonPetValidations(false),
   body("photos").custom((value, { req }) => {
     if (!req.files || !req.files.photos) {
-      throw new Error("At least 1 photos are required");
+      throw new Error("At least 1 photo is required");
     }
     const photos = Array.isArray(req.files.photos)
       ? req.files.photos
@@ -323,5 +239,55 @@ export const updatePetValidation = [
     }),
   // Photos can be optionally updated too:
 
+  validate,
+];
+
+// Adoption application validation
+export const adoptionApplicationValidation = [
+  body("petId").notEmpty().isMongoId().withMessage("Valid pet ID is required"),
+  body("adopterId")
+    .notEmpty()
+    .isMongoId()
+    .withMessage("Valid adopter ID is required"),
+  body("livingArrangement.homeType")
+    .isIn(["house", "apartment", "condo"])
+    .withMessage("Invalid home type"),
+  body("livingArrangement.hasYard")
+    .isBoolean()
+    .withMessage("Has yard must be true or false"),
+  body("livingArrangement.ownership")
+    .isIn(["own", "rent", "live_with_family"])
+    .withMessage("Invalid ownership status"),
+  body("householdInfo.numberOfAdults")
+    .isInt({ min: 1 })
+    .withMessage("Number of adults must be at least 1"),
+  body("householdInfo.hasChildren")
+    .isBoolean()
+    .withMessage("Has children must be true or false"),
+  body("petExperience.hasOtherPets")
+    .isBoolean()
+    .withMessage("Has other pets must be true or false"),
+  body("adoptionDetails.reason")
+    .trim()
+    .notEmpty()
+    .withMessage("Adoption reason is required"),
+  body("adoptionDetails.schedule")
+    .trim()
+    .notEmpty()
+    .withMessage("Schedule information is required"),
+  body("agreementAccepted")
+    .isBoolean()
+    .custom((value) => value === true)
+    .withMessage("You must accept the adoption agreement"),
+  validate,
+];
+
+// Application status update validation
+export const updateApplicationStatusValidation = [
+  body("status").isIn(["approved", "rejected"]).withMessage("Invalid status"),
+  body("rejectionReason")
+    .if(body("status").equals("rejected"))
+    .notEmpty()
+    .withMessage("Rejection reason is required when rejecting an application"),
   validate,
 ];

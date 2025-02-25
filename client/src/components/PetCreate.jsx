@@ -270,7 +270,10 @@ export default function PetCreate() {
               <input
                 {...register("weight", {
                   required: "Weight is required",
-                  pattern: { value: /^[0-9]+kg$/, message: "Format: 12kg" },
+                  pattern: {
+                    value: /^\d+(\.\d+)?kg$/,
+                    message: "Format: 12kg",
+                  },
                 })}
                 placeholder="e.g., 12kg"
                 className={`w-full px-4 py-3 rounded-lg border ${
@@ -457,9 +460,7 @@ export default function PetCreate() {
             <div className="flex items-center justify-center w-full">
               <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-gray-300 rounded-xl cursor-pointer hover:border-blue-400 bg-white">
                 <div className="flex flex-col items-center justify-center">
-                  <span className="text-sm text-gray-500">
-                    Click to upload
-                  </span>
+                  <span className="text-sm text-gray-500">Click to upload</span>
                   <span className="text-xs text-gray-400 mt-1">
                     JPG, JPEG, PNG (max 2MB each)
                   </span>

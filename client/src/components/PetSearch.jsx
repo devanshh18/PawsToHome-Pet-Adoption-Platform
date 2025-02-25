@@ -304,8 +304,7 @@ export default function PetSearch() {
                     placeholder="Location"
                     className="w-full px-6 py-4 bg-transparent outline-none text-gray-900 placeholder-gray-400"
                   />
-                  <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none">
-                  </div>
+                  <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none"></div>
                 </div>
 
                 {/* Location Dropdown */}
@@ -499,7 +498,7 @@ export default function PetSearch() {
               <div className="p-6 pt-2">
                 <button
                   onClick={handleSearch}
-                  className="w-full py-3.5 bg-blue-600 text-white rounded-xl font-medium hover:bg-blue-700 
+                  className="w-full py-3.5 bg-blue-600 text-white rounded-xl font-medium hover:bg-blue-700
           transition-colors flex items-center justify-center gap-2 shadow-sm"
                 >
                   Apply Filters

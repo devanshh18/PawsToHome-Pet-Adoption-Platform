@@ -44,11 +44,7 @@ export default function ShelterProfile() {
             <div className="grid md:grid-cols-2 gap-6">
               <DetailField label="Legal Name" value={user?.name} />
               <DetailField label="Shelter Name" value={user?.shelterName} />
-              <DetailField
-                label="Address"
-                value={user?.address}
-                fullWidth
-              />
+              <DetailField label="Address" value={user?.address} fullWidth />
               <div className="grid grid-cols-2 gap-4 md:col-span-2">
                 <DetailField label="City" value={user?.city} />
                 <DetailField label="State" value={user?.state} />

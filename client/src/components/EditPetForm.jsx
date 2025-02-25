@@ -286,7 +286,10 @@ export default function EditPetForm({ pet, onUpdate, onCancel }) {
                 <input
                   {...register("weight", {
                     required: "Weight is required",
-                    pattern: { value: /^[0-9]+kg$/, message: "Format: 12kg" },
+                    pattern: {
+                      value: /^\d+(\.\d+)?kg$/,
+                      message: "Format: 12kg",
+                    },
                   })}
                   placeholder="e.g., 12kg"
                   className={`w-full px-4 py-3 rounded-lg border ${

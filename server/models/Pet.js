@@ -18,7 +18,6 @@ const petSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-
     goodWithKids: { type: Boolean, required: true },
     goodWithPets: { type: Boolean, required: true },
     description: { type: String, required: true },
@@ -39,7 +38,6 @@ const petSchema = new mongoose.Schema(
       default: "Available",
     },
   },
-
   { timestamps: true, toJSON: { virtuals: true }, toObject: { virtuals: true } }
 );
 

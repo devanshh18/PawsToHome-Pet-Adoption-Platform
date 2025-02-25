@@ -23,6 +23,7 @@ import Legal from "./pages/Legal";
 import LoadingSpinner from "./components/LoadingSpinner";
 import ShelterPanel from "./pages/ShelterPanel";
 import PetDetails from "./pages/PetDetails";
+import AdoptionApplicationPage from "./components/AdoptionApplicationPage";
 
 const router = createBrowserRouter([
   {
@@ -101,6 +102,14 @@ const router = createBrowserRouter([
           </PrivateRoute>
         ),
       },
+      {
+        path: "/adopt/:petId",
+        element: (
+          <PrivateRoute>
+            <AdoptionApplicationPage />
+          </PrivateRoute>
+        ),
+      },
     ],
   },
   {
@@ -153,6 +162,7 @@ function App() {
       try {
         await dispatch(checkAuthStatus()).unwrap();
       } catch (error) {
+        console.log("Auth check failed:", error);
       } finally {
         setIsAuthChecked(true);
       }

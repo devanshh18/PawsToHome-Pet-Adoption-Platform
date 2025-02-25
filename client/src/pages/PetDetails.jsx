@@ -1,10 +1,11 @@
 import { useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchPetById } from "../features/pets/petSlice";
 import LoadingSpinner from "../components/LoadingSpinner";
 
 export default function PetDetails() {
+  const navigate = useNavigate();
   const { id } = useParams();
   const dispatch = useDispatch();
   const { selectedPet, isLoading, error } = useSelector((state) => state.pets);
@@ -197,6 +198,17 @@ export default function PetDetails() {
                 </div>
               </div>
             </div>
+
+            {selectedPet.status === "Available" && (
+              <div className="px-6 py-4 border-t">
+                <button
+                  onClick={() => navigate(`/adopt/${selectedPet._id}`)}
+                  className="w-full md:w-auto bg-blue-600 text-white px-8 py-3 rounded-lg hover:bg-blue-700 transition-colors"
+                >
+                  Start Adoption Process
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </div>
