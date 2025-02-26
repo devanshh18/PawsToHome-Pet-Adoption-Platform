@@ -506,13 +506,26 @@ export default function PetDetails() {
                           Submit Application
                         </h4>
                         <p className="text-sm text-gray-600">
-                          Fill out the adoption form with your information
+                          Fill out the adoption form
                         </p>
                       </div>
                     </div>
                     <div className="flex gap-4">
                       <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0">
                         <span className="font-semibold text-blue-600">2</span>
+                      </div>
+                      <div>
+                        <h4 className="font-medium text-gray-900">
+                          Application Review
+                        </h4>
+                        <p className="text-sm text-gray-600">
+                          The shelter reviews your application{" "}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex gap-4">
+                      <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0">
+                        <span className="font-semibold text-blue-600">3</span>
                       </div>
                       <div>
                         <h4 className="font-medium text-gray-900">
@@ -525,7 +538,7 @@ export default function PetDetails() {
                     </div>
                     <div className="flex gap-4">
                       <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0">
-                        <span className="font-semibold text-blue-600">3</span>
+                        <span className="font-semibold text-blue-600">4</span>
                       </div>
                       <div>
                         <h4 className="font-medium text-gray-900">
