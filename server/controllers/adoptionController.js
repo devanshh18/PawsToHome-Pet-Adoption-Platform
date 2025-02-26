@@ -117,10 +117,7 @@ export const updateApplicationStatus = async (req, res, next) => {
     }
 
     // If pet is already adopted and trying to approve or reject another application
-    if (
-      (application.petId.status === "Adopted" && status === "approved") ||
-      status === "rejected"
-    ) {
+    if (application.petId.status === "Adopted" && status === "approved") {
       throw createError(400, "This pet has already been adopted");
     }
 
