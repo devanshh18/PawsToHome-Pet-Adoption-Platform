@@ -13,8 +13,8 @@ import ResetPassword from "./pages/public/ResetPassword";
 import AdminPanel from "./pages/admin/AdminPanel";
 import { useEffect, useState } from "react";
 import { checkAuthStatus } from "./features/auth/authSlice";
-import Pets from "./pages/adopter/Pets";
-import Shelters from "./pages/adopter/Shelter";
+import Pets from "./pages/adopter/FindPets";
+import Shelters from "./pages/adopter/FindShelters";
 import Rehome from "./pages/adopter/Rehome";
 import HowTo from "./pages/adopter/HowTo";
 import Posts from "./pages/adopter/Posts";
@@ -23,6 +23,7 @@ import Legal from "./pages/adopter/Legal";
 import LoadingSpinner from "./components/shared/LoadingSpinner";
 import ShelterPanel from "./pages/shelter/ShelterPanel";
 import PetDetails from "./components/adopter-facing/PetDetails";
+import ShelterDetails from "./components/shelter-facing/ShelterDetails";
 import AdoptionApplicationPage from "./components/adopter-facing/AdoptionApplicationPage";
 
 const router = createBrowserRouter([
@@ -107,6 +108,14 @@ const router = createBrowserRouter([
         element: (
           <PrivateRoute>
             <AdoptionApplicationPage />
+          </PrivateRoute>
+        ),
+      },
+      {
+        path: "/shelters/:id",
+        element: (
+          <PrivateRoute>
+            <ShelterDetails />
           </PrivateRoute>
         ),
       },
