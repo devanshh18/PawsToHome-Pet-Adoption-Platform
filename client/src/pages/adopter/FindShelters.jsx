@@ -1,4 +1,4 @@
-import ShelterSearch from "../../components/shelter-facing/ShelterSearch"
+import ShelterSearch from "../../components/adopter-facing/ShelterSearch"
 
 export default function Shelters() {
   return (

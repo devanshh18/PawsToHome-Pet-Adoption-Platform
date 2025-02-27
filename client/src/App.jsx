@@ -23,7 +23,7 @@ import Legal from "./pages/adopter/Legal";
 import LoadingSpinner from "./components/shared/LoadingSpinner";
 import ShelterPanel from "./pages/shelter/ShelterPanel";
 import PetDetails from "./components/adopter-facing/PetDetails";
-import ShelterDetails from "./components/shelter-facing/ShelterDetails";
+import ShelterDetails from "./components/adopter-facing/ShelterDetails";
 import AdoptionApplicationPage from "./components/adopter-facing/AdoptionApplicationPage";
 
 const router = createBrowserRouter([

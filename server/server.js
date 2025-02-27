@@ -9,9 +9,10 @@ import authRoutes from "./routes/auth.js";
 import adminRoutes from "./routes/admin.js";
 import petRoutes from "./routes/petRoute.js";
 import adoptionRoutes from "./routes/adoptionRoutes.js";
-import shelterRoutes from "./routes/shelterRoutes.js";
 import { requestLogger } from "./middleware/requestLogger.js";
 import logger from "./utils/logger.js";
+import postRoutes from "./routes/postRoute.js";
+import shelterRoutes from "./routes/shelterRoutes.js";
 
 // Load env vars
 dotenv.config();
@@ -50,6 +51,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/pets", petRoutes);
 app.use("/api/adoptions", adoptionRoutes);
+app.use("/api/posts", postRoutes);
 app.use("/api/shelters", shelterRoutes);
 
 // 404 handler

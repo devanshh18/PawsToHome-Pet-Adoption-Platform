@@ -36,6 +36,19 @@ export const uploadPetToCloudianry = async (file) => {
   }
 };
 
+export const uploadPostToCloudinary = async (file) => {
+  try {
+    const result = await cloudinary.uploader.upload(file, {
+      folder: "posts_images",
+      resource_type: "auto",
+    });
+    return result.secure_url;
+  } catch (error) {
+    console.error("Cloudinary error:", error);
+    throw createError(500, "Error uploading file to Cloudinary");
+  }
+};
+
 export const deleteFromCloudinary = async (publicId) => {
   try {
     await cloudinary.uploader.destroy(publicId);

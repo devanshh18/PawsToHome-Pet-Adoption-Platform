@@ -291,3 +291,92 @@ export const updateApplicationStatusValidation = [
     .withMessage("Rejection reason is required when rejecting an application"),
   validate,
 ];
+
+// Post validation
+
+export const postValidation = [
+  body("title")
+    .notEmpty()
+    .withMessage("Title is required")
+    .isLength({ max: 50 })
+    .withMessage("Title must be less than 50 characters"),
+  body("content").notEmpty().withMessage("Content is required"),
+  body("category")
+    .optional()
+    .isIn(["adoption_story", "pet_care", "training", "general"])
+    .withMessage("Invalid category"),
+  body("photos").custom((value, { req }) => {
+    // Skip validation if no photos are being uploaded (for updates)
+    if (!req.files || !req.files.photos) {
+      // For new posts, photos are required
+      if (req.method === "POST") {
+        throw new Error("At least 1 photo is required");
+      }
+      return true;
+    }
+
+    const photos = Array.isArray(req.files.photos)
+      ? req.files.photos
+      : [req.files.photos];
+
+    if (photos.length < 1 || photos.length > 10) {
+      throw new Error("Please upload between 1 and 10 photos");
+    }
+
+    photos.forEach((photo) => {
+      if (!photo.mimetype.startsWith("image/")) {
+        throw new Error("Please upload only image files");
+      }
+      if (photo.size > 10 * 1024 * 1024) {
+        throw new Error("Each photo must be less than 10MB");
+      }
+    });
+    return true;
+  }),
+  validate,
+];
+
+export const commentValidation = [
+  body("text")
+    .notEmpty()
+    .withMessage("Comment text is required")
+    .isLength({ max: 500 })
+    .withMessage("Comment must be less than 500 characters"),
+  validate,
+];
+
+export const updatePostValidation = [
+  body("title")
+    .optional()
+    .isLength({ max: 50 })
+    .withMessage("Title must be less than 50 characters"),
+  body("content").optional(),
+  body("category")
+    .optional()
+    .isIn(["adoption_story", "pet_care", "training", "general"])
+    .withMessage("Invalid category"),
+  body("photos").custom((value, { req }) => {
+    if (!req.files || !req.files.photos) {
+      return true; // No photos being updated is fine
+    }
+
+    const photos = Array.isArray(req.files.photos)
+      ? req.files.photos
+      : [req.files.photos];
+
+    if (photos.length < 1 || photos.length > 10) {
+      throw new Error("Please upload between 1 and 10 photos");
+    }
+
+    photos.forEach((photo) => {
+      if (!photo.mimetype.startsWith("image/")) {
+        throw new Error("Please upload only image files");
+      }
+      if (photo.size > 10 * 1024 * 1024) {
+        throw new Error("Each photo must be less than 10MB");
+      }
+    });
+    return true;
+  }),
+  validate,
+];

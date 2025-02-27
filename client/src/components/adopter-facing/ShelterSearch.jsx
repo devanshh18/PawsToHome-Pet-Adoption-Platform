@@ -125,11 +125,17 @@ function Shelters() {
     const value = e.target.value;
     setSearchTerm(value);
 
+    // If user changes the selected location text, clear the selection
+    if (selectedLocation && value !== selectedLocation.label) {
+      setSelectedLocation(null);
+    }
+
     // Show dropdown when typing
     setShowDropdown(value.length > 0);
 
     if (!value) {
       setSelectedLocation(null);
+      setShowDropdown(false);
 
       // Clear URL params
       searchParams.delete("city");
@@ -161,6 +167,7 @@ function Shelters() {
     });
     setSelectedLocation(null);
     setSearchTerm("");
+    setShowDropdown(false);
 
     // Clear URL params
     searchParams.delete("city");
