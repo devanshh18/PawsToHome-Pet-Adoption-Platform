@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import axios from "axios";
-import LoadingSpinner from '../components/LoadingSpinner';
+import LoadingSpinner from '../../components/shared/LoadingSpinner';
 
 export default function ResetPassword() {
   const { token } = useParams();

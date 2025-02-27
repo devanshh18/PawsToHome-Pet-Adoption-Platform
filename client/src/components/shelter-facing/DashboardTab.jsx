@@ -2,8 +2,8 @@ import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 import { FaPaw, FaDog, FaCat, FaHome, FaDove } from 'react-icons/fa';
-import { fetchShelterPets } from '../features/pets/petSlice';
-import LoadingSpinner from './LoadingSpinner';
+import { fetchShelterPets } from '../../features/pets/petSlice';
+import LoadingSpinner from '../shared/LoadingSpinner';
 
 const COLORS = ['#6366f1', '#10b981', '#3b82f6', '#f59e0b'];
 

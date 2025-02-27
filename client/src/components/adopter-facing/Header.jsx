@@ -62,8 +62,8 @@
 import { useState, Fragment } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
-import { logout } from "../features/auth/authSlice";
-import { API } from "../features/auth/authService";
+import { logout } from "../../features/auth/authSlice";
+import { API } from "../../features/auth/authService";
 import { Menu, Transition } from "@headlessui/react";
 import { FiUser, FiMenu, FiX } from "react-icons/fi";
 

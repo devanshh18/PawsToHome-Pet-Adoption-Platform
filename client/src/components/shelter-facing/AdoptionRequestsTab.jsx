@@ -3,10 +3,10 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   fetchShelterApplications,
   updateApplication,
-} from "../features/adoptionProcess/adoptionSlice";
+} from "../../features/adoptionProcess/adoptionSlice";
 import { toast } from "react-toastify";
 import { format } from "date-fns";
-import LoadingSpinner from "./LoadingSpinner";
+import LoadingSpinner from "../shared/LoadingSpinner";
 import {
   FiAlertCircle,
   FiCalendar,

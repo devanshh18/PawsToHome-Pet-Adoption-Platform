@@ -6,8 +6,8 @@ import {
   fetchShelterPets,
   deletePetById,
   updateExistingPet,
-} from "../features/pets/petSlice";
-import LoadingSpinner from "./LoadingSpinner";
+} from "../../features/pets/petSlice";
+import LoadingSpinner from "../shared/LoadingSpinner";
 import EditPetForm from "./EditPetForm";
 import { toast } from "react-toastify";
 

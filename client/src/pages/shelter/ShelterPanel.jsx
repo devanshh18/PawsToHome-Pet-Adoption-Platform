@@ -10,13 +10,13 @@ import {
 } from "react-icons/fi";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { logout } from "../features/auth/authSlice";
-import DashboardTab from "../components/DashboardTab";
-import PetCreate from "../components/PetCreate";
-import PetList from "../components/PetList";
-import AdoptionRequestsTab from "../components/AdoptionRequestsTab";
-import ShelterProfile from "../components/ShelterProfile";
-import LoadingSpinner from "../components/LoadingSpinner";
+import { logout } from "../../features/auth/authSlice";
+import DashboardTab from "../../components/shelter-facing/DashboardTab";
+import PetCreate from "../../components/shelter-facing/PetCreate";
+import PetList from "../../components/shelter-facing/PetList";
+import AdoptionRequestsTab from "../../components/shelter-facing/AdoptionRequestsTab";
+import ShelterProfile from "../../components/shelter-facing/ShelterProfile";
+import LoadingSpinner from "../../components/shared/LoadingSpinner";
 
 export default function ShelterPanel() {
   const { user } = useSelector((state) => state.auth);

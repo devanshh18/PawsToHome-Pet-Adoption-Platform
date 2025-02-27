@@ -1,11 +1,11 @@
 import { useState, useMemo, useEffect, useCallback } from "react";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
-import { searchPetsByLocation } from "../features/pets/petSlice";
+import { searchPetsByLocation } from "../../features/pets/petSlice";
 import { Link } from "react-router-dom";
-import LoadingSpinner from "./LoadingSpinner";
+import LoadingSpinner from "../shared/LoadingSpinner";
 import { toast } from "react-toastify";
-import { indianCities, indianStates } from "../utils/location";
+import { indianCities, indianStates } from "../../utils/location";
 import { useSearchParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import {

@@ -2,8 +2,8 @@ import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
-import { addNewPet } from "../features/pets/petSlice";
-import LoadingSpinner from "./LoadingSpinner";
+import { addNewPet } from "../../features/pets/petSlice";
+import LoadingSpinner from "../shared/LoadingSpinner";
 import {
   FaPaw,
   FaInfoCircle,

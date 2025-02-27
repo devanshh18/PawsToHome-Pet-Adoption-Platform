@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useForm, Controller } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
-import { registerUser, registerShelter } from "../features/auth/authService";
+import { registerUser, registerShelter } from "../../features/auth/authService";
 import { toast } from "react-toastify";
 import {
   FiEye,
@@ -13,9 +13,9 @@ import {
 } from "react-icons/fi";
 import { motion } from "framer-motion";
 import { useDispatch, useSelector } from "react-redux";
-import { endLoading, setUser, startLoading } from "../features/auth/authSlice";
-import LoadingSpinner from "../components/LoadingSpinner";
-import { indianCities, indianStates } from "../utils/location";
+import { endLoading, setUser, startLoading } from "../../features/auth/authSlice";
+import LoadingSpinner from "../../components/shared/LoadingSpinner";
+import { indianCities, indianStates } from "../../utils/location";
 
 export default function Register() {
   const [step, setStep] = useState(1);

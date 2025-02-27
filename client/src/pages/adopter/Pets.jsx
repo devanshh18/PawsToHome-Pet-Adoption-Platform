@@ -1,4 +1,4 @@
-import PetSearch from "../components/PetSearch";
+import PetSearch from "../../components/adopter-facing/PetSearch";
 
 export default function Pets() {
   return (

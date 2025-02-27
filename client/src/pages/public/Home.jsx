@@ -10,7 +10,7 @@ import {
   ChevronRightIcon,
   MagnifyingGlassIcon,
 } from "@heroicons/react/24/solid";
-import { indianStates, indianCities } from "../utils/location";
+import { indianStates, indianCities } from "../../utils/location";
 
 export default function Home() {
   const navigate = useNavigate();

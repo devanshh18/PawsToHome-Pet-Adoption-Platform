@@ -4,10 +4,10 @@ import {
   getPendingShelters,
   approveShelter,
   rejectShelter,
-} from "./adminService";
-import { endLoading, setPendingShelters, startLoading } from "./adminSlice";
+} from "../../features/admin/adminService";
+import { endLoading, setPendingShelters, startLoading } from "../../features/admin/adminSlice";
 import { toast } from "react-toastify";
-import LoadingSpinner from "../../components/LoadingSpinner";
+import LoadingSpinner from "../../components/shared/LoadingSpinner";
 
 export default function AdminPanel() {
   const dispatch = useDispatch();

@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchPetById, searchPetsByLocation } from "../features/pets/petSlice";
-import LoadingSpinner from "../components/LoadingSpinner";
+import { fetchPetById, searchPetsByLocation } from "../../features/pets/petSlice";
+import LoadingSpinner from "../shared/LoadingSpinner";
 import Slider from "react-slick";
 import { motion, AnimatePresence } from "framer-motion";
 import {

@@ -1,8 +1,8 @@
 import { Outlet } from "react-router-dom";
-import Header from "../components/Header";
-import Footer from "../components/Footer";
+import Header from "../components/adopter-facing/Header";
+import Footer from "../components/adopter-facing/Footer";
 import { useSelector } from "react-redux";
-import LoadingSpinner from "../components/LoadingSpinner";
+import LoadingSpinner from "../components/shared/LoadingSpinner";
 
 export default function RootLayout() {
   const { isLoading } = useSelector((state) => state.auth);

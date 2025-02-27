@@ -3,9 +3,9 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
-import { fetchPetById } from "../features/pets/petSlice";
-import { submitApplication } from "../features/adoptionProcess/adoptionSlice";
-import LoadingSpinner from "./LoadingSpinner";
+import { fetchPetById } from "../../features/pets/petSlice";
+import { submitApplication } from "../../features/adoptionProcess/adoptionSlice";
+import LoadingSpinner from "../shared/LoadingSpinner";
 import {
   FaHome,
   FaUsers,
