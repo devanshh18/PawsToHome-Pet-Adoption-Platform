@@ -15,7 +15,6 @@ import { useEffect, useState } from "react";
 import { checkAuthStatus } from "./features/auth/authSlice";
 import Pets from "./pages/adopter/FindPets";
 import Shelters from "./pages/adopter/FindShelters";
-import Rehome from "./pages/adopter/Rehome";
 import HowTo from "./pages/adopter/HowTo";
 import Posts from "./pages/adopter/Posts";
 import AboutUs from "./pages/adopter/AboutUs";
@@ -25,6 +24,9 @@ import ShelterPanel from "./pages/shelter/ShelterPanel";
 import PetDetails from "./components/adopter-facing/PetDetails";
 import ShelterDetails from "./components/adopter-facing/ShelterDetails";
 import AdoptionApplicationPage from "./components/adopter-facing/AdoptionApplicationPage";
+import AddPost from "./components/adopter-facing/AddPost";
+import PostDetail from "./components/adopter-facing/PostDetail";
+import EditPost from "./components/adopter-facing/EditPost";
 
 const router = createBrowserRouter([
   {
@@ -56,14 +58,6 @@ const router = createBrowserRouter([
         ),
       },
       {
-        path: "rehome",
-        element: (
-          <PrivateRoute>
-            <Rehome />
-          </PrivateRoute>
-        ),
-      },
-      {
         path: "guide",
         element: (
           <PrivateRoute>
@@ -76,6 +70,30 @@ const router = createBrowserRouter([
         element: (
           <PrivateRoute>
             <Posts />
+          </PrivateRoute>
+        ),
+      },
+      {
+        path: "post/:id",
+        element: (
+          <PrivateRoute>
+            <PostDetail />
+          </PrivateRoute>
+        ),
+      },
+      {
+        path: "add-post",
+        element: (
+          <PrivateRoute>
+            <AddPost />
+          </PrivateRoute>
+        ),
+      },
+      {
+        path: "edit-post/:id",
+        element: (
+          <PrivateRoute>
+            <EditPost />
           </PrivateRoute>
         ),
       },

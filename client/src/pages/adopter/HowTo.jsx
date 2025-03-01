@@ -100,7 +100,7 @@ const HowToPage = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Hero Section */}
-      <div className="bg-gradient-to-r from-blue-600 to-purple-700 text-white py-20 px-4">
+      <div className="bg-gradient-to-r from-blue-600 to-blue-800 text-white py-21.5 px-4">
         <div className="max-w-6xl mx-auto text-center">
           <h1 className="text-4xl md:text-5xl font-bold mb-6">
             Your Complete Pet Adoption Guide

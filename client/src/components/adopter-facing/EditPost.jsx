@@ -1,20 +1,31 @@
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { createPost } from "../../features/post/postSlice";
+import {
+  fetchPostById,
+  updatePost,
+  clearSelectedPost,
+} from "../../features/post/postSlice";
+import { useParams, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import { useNavigate } from "react-router-dom";
 import LoadingSpinner from "../shared/LoadingSpinner";
 import {
   FiImage,
   FiX,
   FiPlus,
   FiArrowLeft,
-  FiFileText,
+  FiSave,
   FiTag,
 } from "react-icons/fi";
 import RichTextEditor from "./RichTextEditor";
 
-export default function AddPost() {
+export default function EditPost() {
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const { selectedPost, isLoading } = useSelector((state) => state.posts);
+  const { user } = useSelector((state) => state.auth);
+
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [category, setCategory] = useState("general");
@@ -22,12 +33,11 @@ export default function AddPost() {
   const [tagInput, setTagInput] = useState("");
   const [photos, setPhotos] = useState([]);
   const [photoPreviews, setPhotoPreviews] = useState([]);
+  const [existingPhotos, setExistingPhotos] = useState([]);
   const [errors, setErrors] = useState({});
+  const [initialLoading, setInitialLoading] = useState(true);
+  const [permissionChecked, setPermissionChecked] = useState(false);
 
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
-  const { isLoading, isError } = useSelector((state) => state.posts);
-  const { user } = useSelector((state) => state.auth);
 
   const categories = [
     { value: "general", label: "General" },
@@ -36,25 +46,68 @@ export default function AddPost() {
     { value: "training", label: "Training" },
   ];
 
-  // Check authentication
+  // Fetch post data and populate form
   useEffect(() => {
-    if (!user) {
-      toast.error("You must be logged in to create a post");
-      navigate("/login");
+    const loadPost = async () => {
+      if (!id) return;
+
+      try {
+        await dispatch(fetchPostById(id)).unwrap();
+      } catch (error) {
+        toast.error(
+          "Failed to load post. It may have been deleted or you don't have permission."
+        );
+        navigate("/posts");
+      } finally {
+        setInitialLoading(false);
+      }
+    };
+
+    loadPost();
+
+    // Clear selected post when component unmounts
+    return () => {
+      dispatch(clearSelectedPost());
+    };
+  }, [dispatch, id, navigate]);
+
+  // Populate form when post data is loaded
+  useEffect(() => {
+    if (selectedPost && user && !permissionChecked) {
+      // Check if user is author
+      if (user._id !== selectedPost.author?._id) {
+        toast.error("You don't have permission to edit this post");
+        navigate(`/post/${id}`);
+        return;
+      }
+      
+      // Mark permission as checked so we don't check again
+      setPermissionChecked(true);
+      
+      // Only set form values if user is the author
+      setTitle(selectedPost.title || "");
+      setContent(selectedPost.content || "");
+      setCategory(selectedPost.category || "general");
+      setTags(selectedPost.tags || []);
+  
+      // Set existing photos
+      if (selectedPost.photos && selectedPost.photos.length > 0) {
+        setExistingPhotos(selectedPost.photos);
+      }
     }
-  }, [user, navigate]);
+  }, [selectedPost, user, id, navigate, permissionChecked]);
 
   // Handle photo selection
   const handlePhotoChange = (e) => {
     const files = Array.from(e.target.files);
 
-    // Validate file count - Backend allows up to 10 photos
-    if (files.length + photos.length > 10) {
+    // Validate file count (existing + new photos) - Backend allows up to 10 photos
+    if (files.length + photos.length + existingPhotos.length > 10) {
       toast.error("Maximum 10 photos allowed");
       return;
     }
 
-    // Validate file type and size - Backend allows up to 10MB
+    // Validate file type and size
     const validFiles = files.filter((file) => {
       if (!["image/jpeg", "image/jpg", "image/png"].includes(file.type)) {
         toast.error(`${file.name} is not a supported image format`);
@@ -81,46 +134,29 @@ export default function AddPost() {
     });
   };
 
-  // Remove a photo from selection
+  // Remove a new photo from selection
   const removePhoto = (index) => {
     setPhotos(photos.filter((_, i) => i !== index));
     setPhotoPreviews(photoPreviews.filter((_, i) => i !== index));
+  };
+
+  // Remove an existing photo
+  const removeExistingPhoto = (index) => {
+    setExistingPhotos(existingPhotos.filter((_, i) => i !== index));
   };
 
   // Handle adding a tag
   const handleAddTag = (e) => {
     e.preventDefault();
     const trimmedTag = tagInput.trim().toLowerCase();
-
-    // Check for empty tag
-    if (!trimmedTag) {
-      return;
-    }
-
-    // Check for tag length
-    if (trimmedTag.length > 20) {
-      toast.error("Tag must be less than 20 characters");
-      return;
-    }
-
-    // Check for special characters
-    if (!/^[a-z0-9\s-]+$/.test(trimmedTag)) {
-      toast.error("Tags can only contain letters, numbers, spaces and hyphens");
-      return;
-    }
-
-    if (tags.includes(trimmedTag)) {
+    if (trimmedTag && !tags.includes(trimmedTag) && tags.length < 5) {
+      setTags([...tags, trimmedTag]);
+      setTagInput("");
+    } else if (tags.includes(trimmedTag)) {
       toast.error("Tag already added");
-      return;
-    }
-
-    if (tags.length >= 5) {
+    } else if (tags.length >= 5) {
       toast.error("Maximum 5 tags allowed");
-      return;
     }
-
-    setTags([...tags, trimmedTag]);
-    setTagInput("");
   };
 
   // Remove a tag
@@ -147,11 +183,16 @@ export default function AddPost() {
       newErrors.content = "Content is required";
     }
 
-    if (photos.length === 0)
+    // Need at least one photo (either existing or new)
+    if (existingPhotos.length === 0 && photos.length === 0) {
       newErrors.photos = "At least one photo is required";
-    else if (photos.length > 10)
+    }
+
+    // Check the total photo count
+    if (existingPhotos.length + photos.length > 10) {
       // Server allows up to 10 photos
       newErrors.photos = "Maximum 10 photos allowed";
+    }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -164,30 +205,7 @@ export default function AddPost() {
     if (!validateForm()) return;
 
     try {
-      // Check if any data is empty before submitting
-      if (!title.trim()) {
-        toast.error("Title cannot be empty");
-        return;
-      }
-
-      if (
-        !content ||
-        content === "<p></p>" ||
-        content === "<p><br></p>" ||
-        content.replace(/<[^>]*>/g, "").trim() === ""
-      ) {
-        toast.error("Content cannot be empty");
-        return;
-      }
-
-      if (photos.length === 0) {
-        toast.error("Please add at least one photo");
-        return;
-      }
-
       const formData = new FormData();
-
-      // Important: Call these methods directly, don't use a formData variable from scope
       formData.append("title", title.trim());
       formData.append("content", content);
       formData.append("category", category);
@@ -196,26 +214,22 @@ export default function AddPost() {
         formData.append("tags", tags.join(","));
       }
 
-      // Add debug log to check FormData
-      console.log("Photos being sent:", photos.length);
-
-      // Make sure each photo is added to formData
-      for (let i = 0; i < photos.length; i++) {
-        console.log(
-          `Adding photo ${i}: ${photos[i].name}, size: ${photos[i].size}`
-        );
-        formData.append("photos", photos[i]);
+      // Handle existing photos
+      if (existingPhotos.length > 0) {
+        existingPhotos.forEach((photoUrl, index) => {
+          formData.append(`existingPhotos[${index}]`, photoUrl);
+        });
       }
+      // Append new photos if any
+      photos.forEach((photo) => {
+        formData.append("photos", photo);
+      });
 
-      // Debug what's being sent
-      console.log("FormData contains:", [...formData.keys()]);
-
-      // Send the request directly - Redux is having issues with FormData
-      await dispatch(createPost(formData)).unwrap();
-      toast.success("Post created successfully!");
-      navigate("/posts");
+      await dispatch(updatePost({ id, postData: formData })).unwrap();
+      toast.success("Post updated successfully!");
+      navigate(`/post/${id}`);
     } catch (error) {
-      console.error("Failed to create post:", error);
+      console.error("Failed to update post:", error);
 
       // Enhanced error handling
       if (error?.errors && Array.isArray(error.errors)) {
@@ -238,12 +252,18 @@ export default function AddPost() {
       } else if (error?.message) {
         toast.error(error.message);
       } else {
-        toast.error("Failed to create post. Please try again.");
+        toast.error("Failed to update post. Please try again.");
       }
     }
   };
 
-  if (!user) return null; // Don't render anything if not logged in
+  if (initialLoading || (isLoading && !selectedPost)) {
+    return (
+      <div className="min-h-screen flex justify-center items-center bg-gray-50">
+        <LoadingSpinner />
+      </div>
+    );
+  }
 
   return (
     <div className="bg-gray-50 min-h-screen py-8 md:py-12">
@@ -251,15 +271,14 @@ export default function AddPost() {
         {/* Header */}
         <div className="mb-8">
           <button
-            onClick={() => navigate("/posts")}
+            onClick={() => navigate(`/post/${id}`)}
             className="flex items-center text-gray-600 hover:text-blue-600 mb-6 transition-colors"
           >
-            <FiArrowLeft className="mr-2" /> Back to posts
+            <FiArrowLeft className="mr-2" /> Back to post
           </button>
-          <h1 className="text-3xl font-bold text-gray-900">Create a Post</h1>
+          <h1 className="text-3xl font-bold text-gray-900">Edit Post</h1>
           <p className="mt-2 text-gray-600">
-            Share your pet-related stories, tips, and experiences with the
-            community
+            Update your post content, images, or tags
           </p>
         </div>
 
@@ -390,11 +409,42 @@ export default function AddPost() {
             {/* Photo Upload */}
             <div className="bg-white rounded-xl shadow-sm p-6">
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Upload Photos *{" "}
+                Update Photos{" "}
                 <span className="text-gray-500 font-normal">
                   (1-10 photos, max 10MB each)
                 </span>
               </label>
+
+              {/* Current photos */}
+              {existingPhotos.length > 0 && (
+                <div className="mb-4">
+                  <h4 className="text-sm font-medium text-gray-700 mb-2">
+                    Current Photos ({existingPhotos.length})
+                  </h4>
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    {existingPhotos.map((src, index) => (
+                      <div key={index} className="relative group">
+                        <div className="overflow-hidden rounded-lg h-32 bg-gray-100">
+                          <img
+                            src={src}
+                            alt={`Current ${index + 1}`}
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => removeExistingPhoto(index)}
+                          className="absolute top-1 right-1 bg-white p-1 rounded-full shadow-md hover:bg-red-100 transition-colors"
+                        >
+                          <FiX size={16} className="text-red-500" />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Upload new photos */}
               <div
                 className={`border-2 border-dashed rounded-lg p-4 ${
                   errors.photos
@@ -428,11 +478,11 @@ export default function AddPost() {
                 <p className="mt-2 text-sm text-red-600">{errors.photos}</p>
               )}
 
-              {/* Photo previews */}
+              {/* New photo previews */}
               {photoPreviews.length > 0 && (
                 <div className="mt-4">
                   <h4 className="text-sm font-medium text-gray-700 mb-2">
-                    Selected Photos ({photoPreviews.length}/10)
+                    New Photos to Add ({photoPreviews.length})
                   </h4>
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                     {photoPreviews.map((src, index) => (
@@ -456,13 +506,17 @@ export default function AddPost() {
                   </div>
                 </div>
               )}
+
+              <p className="mt-4 text-sm text-gray-500">
+                Total photos: {existingPhotos.length + photoPreviews.length}/10
+              </p>
             </div>
 
             {/* Submit Button */}
             <div className="flex justify-end gap-4">
               <button
                 type="button"
-                onClick={() => navigate("/posts")}
+                onClick={() => navigate(`/post/${id}`)}
                 className="px-6 py-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 font-medium"
               >
                 Cancel
@@ -472,7 +526,7 @@ export default function AddPost() {
                 disabled={isLoading}
                 className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium flex items-center gap-2"
               >
-                <FiFileText size={18} /> Publish Post
+                <FiSave size={18} /> Update Post
               </button>
             </div>
           </form>

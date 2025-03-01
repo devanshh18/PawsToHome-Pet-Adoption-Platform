@@ -1,64 +1,3 @@
-// import { useSelector, useDispatch } from "react-redux";
-// import { Link, useNavigate } from "react-router-dom";
-// import { logout } from "../features/auth/authSlice";
-// import { API } from "../features/auth/authService";
-
-// export default function Header() {
-//   const { user } = useSelector((state) => state.auth);
-//   const dispatch = useDispatch();
-//   const navigate = useNavigate();
-
-//   const handleLogout = async () => {
-//     try {
-//       await API.post("/logout");
-//       dispatch(logout());
-//       navigate("/");
-//     } catch (error) {
-//       console.error("Logout failed:", error);
-//     }
-//   };
-
-//   return (
-//     <header className="bg-white shadow-md">
-//       <div className="max-w-6xl mx-auto px-4 py-3 flex justify-between items-center">
-//         <Link to="/" className="text-xl font-bold text-blue-600">
-//           PawsToHome
-//         </Link>
-
-//         <nav>
-//           {user ? (
-//             <div className="flex items-center gap-4">
-//               <span className="text-gray-600">Welcome, {user.name}</span>
-//               {user.role === "admin" && (
-//                 <Link to="/admin" className="text-blue-500 hover:text-blue-600">
-//                   Admin Panel
-//                 </Link>
-//               )}
-//               <button
-//                 onClick={handleLogout}
-//                 className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
-//               >
-//                 Logout
-//               </button>
-//             </div>
-//           ) : (
-//             <div className="space-x-4">
-//               <Link to="/login" className="text-blue-500 hover:text-blue-600">
-//                 Login
-//               </Link>
-//               <Link
-//                 to="/register"
-//                 className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-//               >
-//                 Register
-//               </Link>
-//             </div>
-//           )}
-//         </nav>
-//       </div>
-//     </header>
-//   );
-// }
 import { useState, Fragment } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
@@ -77,7 +16,6 @@ export default function Header() {
   const navItems = [
     { name: "Find a pet", path: "/pets" },
     { name: "Find a shelter", path: "/shelters" },
-    { name: "Rehome", path: "/rehome" },
     { name: "How To", path: "/guide" },
     { name: "Posts", path: "/posts" },
   ];

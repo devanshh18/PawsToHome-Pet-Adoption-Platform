@@ -4,6 +4,7 @@ import adminReducer from "../features/admin/adminSlice";
 import petReducer from "../features/pets/petSlice";
 import adoptionReducer from "../features/adoptionProcess/adoptionSlice";
 import shelterReducer from "../features/shelter/shelterSlice";
+import postReducer from "../features/post/postSlice";
 
 export const store = configureStore({
   reducer: {
@@ -12,5 +13,6 @@ export const store = configureStore({
     pets: petReducer,
     adoption: adoptionReducer,
     shelters: shelterReducer,
+    posts: postReducer,
   },
 });

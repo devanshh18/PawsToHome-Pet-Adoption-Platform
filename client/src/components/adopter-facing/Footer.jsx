@@ -32,7 +32,6 @@ const Footer = () => {
               {[
                 ["Find Pets", "/pets"],
                 ["Find Shelters", "/shelters"],
-                ["Rehome a pet", "/rehome"],
                 ["Posts", "/posts"],
                 ["How To", "/guide"],
                 ["About Us", "/about-us"],
