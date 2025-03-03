@@ -5,6 +5,7 @@ import { logout } from "../../features/auth/authSlice";
 import { API } from "../../features/auth/authService";
 import { Menu, Transition } from "@headlessui/react";
 import { FiUser, FiMenu, FiX } from "react-icons/fi";
+import { motion } from "framer-motion";
 
 export default function Header() {
   const { user } = useSelector((state) => state.auth);
@@ -37,7 +38,12 @@ export default function Header() {
           {/* Logo */}
           <div className="flex-shrink-0 flex items-center">
             <Link to="/" className="text-3xl font-bold text-blue-600">
-              PawsToHome
+              <motion.div
+                whileHover={{ scale: 1.05 }}
+                transition={{ duration: 0.2 }}
+              >
+                PawsToHome
+              </motion.div>
             </Link>
           </div>
 
@@ -46,13 +52,14 @@ export default function Header() {
             {/* Navigation Items */}
             <div className="flex space-x-8">
               {navItems.map((item) => (
-                <Link
-                  key={item.name}
-                  to={item.path}
-                  className="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-lg font-medium"
-                >
-                  {item.name}
-                </Link>
+                <motion.div key={item.name} whileHover={{ y: -2 }}>
+                  <Link
+                    to={item.path}
+                    className="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-lg font-medium"
+                  >
+                    {item.name}
+                  </Link>
+                </motion.div>
               ))}
             </div>
 
@@ -66,9 +73,12 @@ export default function Header() {
                     className="flex text-sm rounded-full focus:outline-none"
                   >
                     <span className="sr-only">Open user menu</span>
-                    <div className="h-11 w-11 rounded-full bg-blue-100 flex items-center justify-center hover:bg-blue-200 transition-colors">
+                    <motion.div
+                      whileHover={{ scale: 1.1 }}
+                      className="h-11 w-11 rounded-full bg-blue-100 flex items-center justify-center hover:bg-blue-200 transition-colors"
+                    >
                       <FiUser className="h-6 w-6 text-blue-600" />
-                    </div>
+                    </motion.div>
                   </Menu.Button>
                 </div>
                 <Transition
@@ -88,26 +98,17 @@ export default function Header() {
                     onMouseLeave={() => setIsProfileOpen(false)}
                   >
                     <Menu.Item>
-                      {() => (
-                        <span className="block px-4 py-2 text-sm text-gray-700">
-                          Welcome, {user.name}
-                        </span>
+                      {({ active }) => (
+                        <Link
+                          to="/my-account"
+                          className={`${
+                            active ? "bg-gray-100" : ""
+                          } flex items-center gap-2 px-4 py-2 text-sm text-gray-700`}
+                        >
+                          My Account
+                        </Link>
                       )}
                     </Menu.Item>
-                    {user.role === "admin" && (
-                      <Menu.Item>
-                        {({ active }) => (
-                          <Link
-                            to="/admin"
-                            className={`${
-                              active ? "bg-gray-100" : ""
-                            } block px-4 py-2 text-sm text-gray-700`}
-                          >
-                            Admin Panel
-                          </Link>
-                        )}
-                      </Menu.Item>
-                    )}
                     <Menu.Item>
                       {({ active }) => (
                         <button
@@ -125,18 +126,22 @@ export default function Header() {
               </Menu>
             ) : (
               <div className="flex items-center space-x-4">
-                <Link
-                  to="/login"
-                  className="text-gray-700 hover:text-blue-600 px-3 py-2 text-lg font-medium"
-                >
-                  Login
-                </Link>
-                <Link
-                  to="/register"
-                  className="bg-blue-600 text-white px-4 py-2 rounded-md text-lg font-medium hover:bg-blue-700 transition-colors"
-                >
-                  Get Started
-                </Link>
+                <motion.div whileHover={{ scale: 1.05 }}>
+                  <Link
+                    to="/login"
+                    className="text-gray-700 hover:text-blue-600 px-3 py-2 text-lg font-medium"
+                  >
+                    Login
+                  </Link>
+                </motion.div>
+                <motion.div whileHover={{ scale: 1.05 }}>
+                  <Link
+                    to="/register"
+                    className="bg-blue-600 text-white px-4 py-2 rounded-md text-lg font-medium hover:bg-blue-700 transition-colors"
+                  >
+                    Get Started
+                  </Link>
+                </motion.div>
               </div>
             )}
           </div>
@@ -173,14 +178,12 @@ export default function Header() {
             ))}
             {user ? (
               <>
-                {user.role === "admin" && (
-                  <Link
-                    to="/admin"
-                    className="text-gray-700 hover:text-blue-600 block px-3 py-2 rounded-md text-base font-medium"
-                  >
-                    Admin Panel
-                  </Link>
-                )}
+                <Link
+                  to="/my-account"
+                  className="text-gray-700 hover:text-blue-600 block px-3 py-2 rounded-md text-base font-medium"
+                >
+                  My Account
+                </Link>
                 <button
                   onClick={handleLogout}
                   className="text-gray-700 hover:text-blue-600 block w-full text-left px-3 py-2 rounded-md text-base font-medium"

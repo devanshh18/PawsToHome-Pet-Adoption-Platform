@@ -27,6 +27,7 @@ import AdoptionApplicationPage from "./components/adopter-facing/AdoptionApplica
 import AddPost from "./components/adopter-facing/AddPost";
 import PostDetail from "./components/adopter-facing/PostDetail";
 import EditPost from "./components/adopter-facing/EditPost";
+import MyAccount from "./components/adopter-facing/MyAccount";
 
 const router = createBrowserRouter([
   {
@@ -134,6 +135,14 @@ const router = createBrowserRouter([
         element: (
           <PrivateRoute>
             <ShelterDetails />
+          </PrivateRoute>
+        ),
+      },
+      {
+        path: "/my-account",
+        element: (
+          <PrivateRoute>
+            <MyAccount />
           </PrivateRoute>
         ),
       },

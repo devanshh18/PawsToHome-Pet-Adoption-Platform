@@ -7,6 +7,7 @@ import {
   forgotPassword,
   resetPassword,
   getMe,
+  updateProfile,
 } from "../controllers/authController.js";
 import {
   registerUserValidation,
@@ -26,5 +27,6 @@ router.post("/logout", logout); // Add logout route
 router.post("/forgot-password", forgotPasswordValidation, forgotPassword);
 router.post("/reset-password/:token", resetPasswordValidation, resetPassword);
 router.get("/me", authenticate, getMe);
+router.put("/update-profile", authenticate, updateProfile);
 
 export default router;

@@ -3,6 +3,7 @@ import {
   createPost,
   getAllPosts,
   getPostById,
+  getUserPosts,
   updatePost,
   deletePost,
   addComment,
@@ -19,6 +20,11 @@ const router = express.Router();
 
 // Public routes
 router.get("/", getAllPosts);
+
+// FIXED: Move this route BEFORE the /:id route 
+router.get("/user", authenticate, getUserPosts);
+
+// Now the /:id route won't match "/user"
 router.get("/:id", getPostById);
 
 // Protected routes

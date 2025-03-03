@@ -68,7 +68,29 @@ userSchema.pre("save", async function (next) {
 
 // Method to compare password for login
 userSchema.methods.comparePassword = async function (candidatePassword) {
-  return bcrypt.compare(candidatePassword, this.password);
+  try {
+    // Basic validation
+    if (!candidatePassword) {
+      throw new Error("Password is required for comparison");
+    }
+
+    if (!this.password) {
+      // If password field is missing, fetch the fresh user data with password
+      const freshUser = await this.constructor
+        .findById(this._id)
+        .select("+password");
+      if (!freshUser || !freshUser.password) {
+        throw new Error("User password data cannot be retrieved");
+      }
+      return bcrypt.compare(candidatePassword, freshUser.password);
+    }
+
+    // Normal flow when password is available
+    return bcrypt.compare(candidatePassword, this.password);
+  } catch (error) {
+    console.error("Password comparison error:", error);
+    throw new Error("Failed to verify password");
+  }
 };
 
 const User = mongoose.model("User", userSchema);

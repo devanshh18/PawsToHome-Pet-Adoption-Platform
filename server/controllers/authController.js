@@ -280,6 +280,82 @@ export const getMe = async (req, res, next) => {
         email: user.email,
         role: user.role,
         phoneNo: user.phoneNo,
+        createdAt: user.createdAt,
+        ...(user.role === "shelter" && {
+          shelterName: user.shelterName,
+          address: user.address,
+          city: user.city,
+          state: user.state,
+          status: user.status,
+        }),
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// Edit/Update user profile
+export const updateProfile = async (req, res, next) => {
+  try {
+    const { name, phoneNo, currentPassword, newPassword } = req.body;
+
+    // Find user with password field explicitly included for this operation
+    const user = await User.findById(req.user._id).select("+password");
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    // Update basic fields if provided
+    if (name) user.name = name;
+    if (phoneNo) user.phoneNo = phoneNo;
+
+    // Handle password update if provided
+    if (newPassword) {
+      if (!currentPassword) {
+        return res.status(400).json({
+          success: false,
+          message: "Current password is required to set a new password",
+        });
+      }
+
+      try {
+        // Verify current password
+        const isMatch = await user.comparePassword(currentPassword);
+
+        if (!isMatch) {
+          return res.status(400).json({
+            success: false,
+            message: "Current password is incorrect",
+          });
+        }
+
+        // Set new password (will be hashed by pre-save hook)
+        user.password = newPassword;
+      } catch (passwordError) {
+        return res.status(400).json({
+          success: false,
+          message: passwordError.message || "Error validating password",
+        });
+      }
+    }
+
+    // Save updated user
+    await user.save();
+
+    res.status(200).json({
+      success: true,
+      user: {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        phoneNo: user.phoneNo,
+        createdAt: user.createdAt,
         ...(user.role === "shelter" && {
           shelterName: user.shelterName,
           address: user.address,

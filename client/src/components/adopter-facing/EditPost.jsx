@@ -38,7 +38,6 @@ export default function EditPost() {
   const [initialLoading, setInitialLoading] = useState(true);
   const [permissionChecked, setPermissionChecked] = useState(false);
 
-
   const categories = [
     { value: "general", label: "General" },
     { value: "adoption_story", label: "Adoption Story" },
@@ -80,16 +79,16 @@ export default function EditPost() {
         navigate(`/post/${id}`);
         return;
       }
-      
+
       // Mark permission as checked so we don't check again
       setPermissionChecked(true);
-      
+
       // Only set form values if user is the author
       setTitle(selectedPost.title || "");
       setContent(selectedPost.content || "");
       setCategory(selectedPost.category || "general");
       setTags(selectedPost.tags || []);
-  
+
       // Set existing photos
       if (selectedPost.photos && selectedPost.photos.length > 0) {
         setExistingPhotos(selectedPost.photos);
@@ -227,7 +226,7 @@ export default function EditPost() {
 
       await dispatch(updatePost({ id, postData: formData })).unwrap();
       toast.success("Post updated successfully!");
-      navigate(`/post/${id}`);
+      navigate(-1);
     } catch (error) {
       console.error("Failed to update post:", error);
 
@@ -271,7 +270,7 @@ export default function EditPost() {
         {/* Header */}
         <div className="mb-8">
           <button
-            onClick={() => navigate(`/post/${id}`)}
+            onClick={() => navigate(-1)}
             className="flex items-center text-gray-600 hover:text-blue-600 mb-6 transition-colors"
           >
             <FiArrowLeft className="mr-2" /> Back to post

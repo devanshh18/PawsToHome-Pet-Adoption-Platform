@@ -3,6 +3,7 @@ import {
   submitApplication,
   getShelterApplications,
   updateApplicationStatus,
+  getUserApplications,
 } from "../controllers/adoptionController.js";
 import {
   authenticate,
@@ -42,5 +43,8 @@ router.patch(
   updateApplicationStatusValidation,
   updateApplicationStatus
 );
+
+// Get user's submitted applications
+router.get("/user", authenticate, getUserApplications);
 
 export default router;

@@ -213,7 +213,7 @@ export default function AddPost() {
       // Send the request directly - Redux is having issues with FormData
       await dispatch(createPost(formData)).unwrap();
       toast.success("Post created successfully!");
-      navigate("/posts");
+      navigate(-1);
     } catch (error) {
       console.error("Failed to create post:", error);
 
@@ -251,7 +251,7 @@ export default function AddPost() {
         {/* Header */}
         <div className="mb-8">
           <button
-            onClick={() => navigate("/posts")}
+            onClick={() => navigate(-1)}
             className="flex items-center text-gray-600 hover:text-blue-600 mb-6 transition-colors"
           >
             <FiArrowLeft className="mr-2" /> Back to posts

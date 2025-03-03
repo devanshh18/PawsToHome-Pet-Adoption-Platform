@@ -186,3 +186,31 @@ export const updateApplicationStatus = async (req, res, next) => {
     next(error);
   }
 };
+
+// Get user's submitted applications
+export const getUserApplications = async (req, res, next) => {
+  try {
+    const applications = await Adoption.find({
+      adopterId: req.user._id,
+    })
+      .sort({ createdAt: -1 })
+      .populate([
+        {
+          path: "petId",
+          select: "name photos breed gender age status",
+          populate: {
+            path: "shelterId",
+            select: "name",
+          },
+        },
+      ]);
+
+    res.json({
+      success: true,
+      count: applications.length,
+      applications,
+    });
+  } catch (error) {
+    next(error);
+  }
+};

@@ -101,6 +101,30 @@ export const getPostById = async (req, res, next) => {
   }
 };
 
+//Get user's post
+export const getUserPosts = async (req, res, next) => {
+  try {
+    const posts = await Post.find({
+      author: req.user._id,
+    })
+      .sort({ createdAt: -1 })
+      .populate({
+        path: "author",
+        select: "name",
+      });
+
+    console.log(`Found ${posts.length} posts for user ID: ${req.user._id}`);
+
+    res.status(200).json({
+      success: true,
+      posts,
+    });
+  } catch (error) {
+    console.error("Error in getUserPosts:", error);
+    next(error);
+  }
+};
+
 // Update post
 export const updatePost = async (req, res, next) => {
   try {

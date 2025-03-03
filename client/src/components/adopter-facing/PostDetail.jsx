@@ -117,7 +117,7 @@ const PostDetail = () => {
 
     try {
       await dispatch(deletePost(id)).unwrap();
-      navigate("/posts");
+      navigate(-1);
       toast.success("Post deleted successfully");
     } catch (error) {
       toast.error("Failed to delete post");
@@ -191,7 +191,7 @@ const PostDetail = () => {
         {/* Back button */}
         <div className="mb-8">
           <button
-            onClick={() => navigate("/posts")}
+            onClick={() => navigate(-1)}
             className="flex items-center text-gray-600 hover:text-blue-600 transition-colors"
           >
             <FiArrowLeft className="mr-2" /> Back to posts
