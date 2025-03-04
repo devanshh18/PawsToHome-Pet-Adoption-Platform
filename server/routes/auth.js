@@ -15,6 +15,7 @@ import {
   loginValidation,
   forgotPasswordValidation,
   resetPasswordValidation,
+  updateProfileValidation,
 } from "../middleware/validation.js";
 import { authenticate } from "../middleware/authMiddleware.js";
 
@@ -27,6 +28,11 @@ router.post("/logout", logout); // Add logout route
 router.post("/forgot-password", forgotPasswordValidation, forgotPassword);
 router.post("/reset-password/:token", resetPasswordValidation, resetPassword);
 router.get("/me", authenticate, getMe);
-router.put("/update-profile", authenticate, updateProfile);
+router.put(
+  "/update-profile",
+  authenticate,
+  updateProfileValidation,
+  updateProfile
+);
 
 export default router;

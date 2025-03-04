@@ -380,3 +380,47 @@ export const updatePostValidation = [
   }),
   validate,
 ];
+
+// Update profile validation rules
+export const updateProfileValidation = [
+  // Basic user fields (optional)
+  body("name").optional().trim().notEmpty().withMessage("Name cannot be empty"),
+  body("phoneNo")
+    .optional()
+    .matches(/^\d{10}$/)
+    .withMessage("Phone number must be 10 digits"),
+
+  // Shelter specific fields (optional)
+  body("shelterName")
+    .optional()
+    .trim()
+    .notEmpty()
+    .withMessage("Shelter name cannot be empty"),
+  body("address")
+    .optional()
+    .trim()
+    .notEmpty()
+    .withMessage("Address cannot be empty"),
+  body("city").optional().trim().notEmpty().withMessage("City cannot be empty"),
+  body("state")
+    .optional()
+    .trim()
+    .notEmpty()
+    .withMessage("State cannot be empty"),
+
+  // Password validation - only validate if provided
+  body("newPassword")
+    .optional()
+    .matches(
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$/
+    )
+    .withMessage(
+      "Password must contain at least 6 characters, including one uppercase, one lowercase, one number, and one special character"
+    ),
+  body("currentPassword")
+    .if(body("newPassword").exists())
+    .notEmpty()
+    .withMessage("Current password is required to set a new password"),
+
+  validate,
+];

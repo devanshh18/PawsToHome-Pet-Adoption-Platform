@@ -298,7 +298,16 @@ export const getMe = async (req, res, next) => {
 // Edit/Update user profile
 export const updateProfile = async (req, res, next) => {
   try {
-    const { name, phoneNo, currentPassword, newPassword } = req.body;
+    const {
+      name,
+      phoneNo,
+      currentPassword,
+      newPassword,
+      shelterName,
+      address,
+      city,
+      state,
+    } = req.body;
 
     // Find user with password field explicitly included for this operation
     const user = await User.findById(req.user._id).select("+password");
@@ -313,6 +322,13 @@ export const updateProfile = async (req, res, next) => {
     // Update basic fields if provided
     if (name) user.name = name;
     if (phoneNo) user.phoneNo = phoneNo;
+
+    if (user.role === "shelter") {
+      if (shelterName) user.shelterName = shelterName;
+      if (address) user.address = address;
+      if (city) user.city = city;
+      if (state) user.state = state;
+    }
 
     // Handle password update if provided
     if (newPassword) {

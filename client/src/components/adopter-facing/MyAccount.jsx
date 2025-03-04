@@ -528,211 +528,215 @@ export default function MyAccount() {
           </div>
         </div>
       </div>
-      // Replace the existing modal implementation with this new design
-{isEditModalOpen && (
-  <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-    <div className="bg-white rounded-2xl shadow-xl w-full max-w-xl overflow-hidden">
-      {/* Modal Header */}
-      <div className="bg-gradient-to-r from-blue-600 to-indigo-700 px-6 py-4 flex justify-between items-center">
-        <h3 className="text-xl font-bold text-white flex items-center gap-2">
-          <FiEdit2 className="h-5 w-5" /> Edit Profile
-        </h3>
-        <button
-          onClick={() => setIsEditModalOpen(false)}
-          className="text-white/80 hover:text-white hover:bg-white/10 rounded-full p-1.5 transition-colors"
-          aria-label="Close"
-        >
-          <FiX size={22} />
-        </button>
-      </div>
-
-      {/* Modal Body */}
-      <div className="p-6">
-        <form onSubmit={handleSubmitEdit}>
-          <div className="space-y-6">
-            {/* Personal Details Section */}
-            <div>
-              <h4 className="text-sm font-semibold text-blue-600 uppercase tracking-wide mb-3">
-                Personal Details
-              </h4>
-              
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                    Full Name
-                  </label>
-                  <div className="relative">
-                    <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                      <FiUser className="text-gray-400" />
-                    </div>
-                    <input
-                      type="text"
-                      name="name"
-                      value={editForm.name}
-                      onChange={handleEditFormChange}
-                      className="w-full pl-10 px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                      placeholder="Enter your name"
-                      required
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                    Phone Number
-                  </label>
-                  <div className="relative">
-                    <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                      <FiPhone className="text-gray-400" />
-                    </div>
-                    <input
-                      type="text"
-                      name="phoneNo"
-                      value={editForm.phoneNo}
-                      onChange={handleEditFormChange}
-                      className="w-full pl-10 px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                      placeholder="Enter your phone number"
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Password Section */}
-            <div>
-              <h4 className="text-sm font-semibold text-blue-600 uppercase tracking-wide mb-3 pt-2 border-t border-gray-200">
-                Change Password
-              </h4>
-              
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                    Current Password
-                  </label>
-                  <div className="relative">
-                    <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                      <FiLock className="text-gray-400" />
-                    </div>
-                    <input
-                      type={showCurrentPassword ? "text" : "password"}
-                      name="currentPassword"
-                      value={editForm.currentPassword}
-                      onChange={handleEditFormChange}
-                      className="w-full pl-10 pr-10 px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                      placeholder="Enter current password"
-                    />
-                    <button
-                      type="button"
-                      className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 hover:text-gray-700"
-                      onClick={() => setShowCurrentPassword(!showCurrentPassword)}
-                    >
-                      {showCurrentPassword ? (
-                        <FiEyeOff size={18} />
-                      ) : (
-                        <FiEye size={18} />
-                      )}
-                    </button>
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                    New Password
-                  </label>
-                  <div className="relative">
-                    <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                      <FiLock className="text-gray-400" />
-                    </div>
-                    <input
-                      type={showNewPassword ? "text" : "password"}
-                      name="newPassword"
-                      value={editForm.newPassword}
-                      onChange={handleEditFormChange}
-                      className="w-full pl-10 pr-10 px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
-                      placeholder="Enter new password"
-                    />
-                    <button
-                      type="button"
-                      className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 hover:text-gray-700"
-                      onClick={() => setShowNewPassword(!showNewPassword)}
-                    >
-                      {showNewPassword ? (
-                        <FiEyeOff size={18} />
-                      ) : (
-                        <FiEye size={18} />
-                      )}
-                    </button>
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                    Confirm New Password
-                  </label>
-                  <div className="relative">
-                    <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                      <FiLock className="text-gray-400" />
-                    </div>
-                    <input
-                      type={showConfirmPassword ? "text" : "password"}
-                      name="confirmPassword"
-                      value={editForm.confirmPassword}
-                      onChange={handleEditFormChange}
-                      className="w-full pl-10 pr-10 px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                      placeholder="Confirm new password"
-                    />
-                    <button
-                      type="button"
-                      className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 hover:text-gray-700"
-                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                    >
-                      {showConfirmPassword ? (
-                        <FiEyeOff size={18} />
-                      ) : (
-                        <FiEye size={18} />
-                      )}
-                    </button>
-                  </div>
-                </div>
-
-                {/* Password error message */}
-                {passwordError && (
-                  <div className="bg-red-50 border-l-4 border-red-500 p-3 rounded">
-                    <p className="flex items-center gap-2 text-sm text-red-700">
-                      <FiAlertCircle className="h-4 w-4 flex-shrink-0" />
-                      {passwordError}
-                    </p>
-                  </div>
-                )}
-
-                <p className="text-xs text-gray-500 italic">
-                  Leave password fields empty if you don't want to change it
-                </p>
-              </div>
-            </div>
-
-            {/* Buttons */}
-            <div className="flex gap-3 pt-2">
+      {isEditModalOpen && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl shadow-xl w-full max-w-xl overflow-hidden">
+            {/* Modal Header */}
+            <div className="bg-gradient-to-r from-blue-600 to-indigo-700 px-6 py-4 flex justify-between items-center">
+              <h3 className="text-xl font-bold text-white flex items-center gap-2">
+                <FiEdit2 className="h-5 w-5" /> Edit Profile
+              </h3>
               <button
-                type="button"
                 onClick={() => setIsEditModalOpen(false)}
-                className="flex-1 px-4 py-2.5 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 font-medium transition-colors"
+                className="text-white/80 hover:text-white hover:bg-white/10 rounded-full p-1.5 transition-colors"
+                aria-label="Close"
               >
-                Cancel
+                <FiX size={22} />
               </button>
-              <button
-                type="submit"
-                className="flex-1 px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-lg hover:from-blue-700 hover:to-indigo-700 font-medium transition-all shadow-sm hover:shadow"
-              >
-                Save Changes
-              </button>
+            </div>
+
+            {/* Modal Body */}
+            <div className="p-6">
+              <form onSubmit={handleSubmitEdit}>
+                <div className="space-y-6">
+                  {/* Personal Details Section */}
+                  <div>
+                    <h4 className="text-sm font-semibold text-blue-600 uppercase tracking-wide mb-3">
+                      Personal Details
+                    </h4>
+
+                    <div className="space-y-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                          Full Name
+                        </label>
+                        <div className="relative">
+                          <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                            <FiUser className="text-gray-400" />
+                          </div>
+                          <input
+                            type="text"
+                            name="name"
+                            value={editForm.name}
+                            onChange={handleEditFormChange}
+                            className="w-full pl-10 px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                            placeholder="Enter your name"
+                            required
+                          />
+                        </div>
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                          Phone Number
+                        </label>
+                        <div className="relative">
+                          <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                            <FiPhone className="text-gray-400" />
+                          </div>
+                          <input
+                            type="text"
+                            name="phoneNo"
+                            value={editForm.phoneNo}
+                            onChange={handleEditFormChange}
+                            className="w-full pl-10 px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                            placeholder="Enter your phone number"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Password Section */}
+                  <div>
+                    <h4 className="text-sm font-semibold text-blue-600 uppercase tracking-wide mb-3 pt-2 border-t border-gray-200">
+                      Change Password
+                    </h4>
+
+                    <div className="space-y-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                          Current Password
+                        </label>
+                        <div className="relative">
+                          <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                            <FiLock className="text-gray-400" />
+                          </div>
+                          <input
+                            type={showCurrentPassword ? "text" : "password"}
+                            name="currentPassword"
+                            value={editForm.currentPassword}
+                            onChange={handleEditFormChange}
+                            className="w-full pl-10 pr-10 px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                            placeholder="Enter current password"
+                          />
+                          <button
+                            type="button"
+                            className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 hover:text-gray-700"
+                            onClick={() =>
+                              setShowCurrentPassword(!showCurrentPassword)
+                            }
+                          >
+                            {showCurrentPassword ? (
+                              <FiEyeOff size={18} />
+                            ) : (
+                              <FiEye size={18} />
+                            )}
+                          </button>
+                        </div>
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                          New Password
+                        </label>
+                        <div className="relative">
+                          <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                            <FiLock className="text-gray-400" />
+                          </div>
+                          <input
+                            type={showNewPassword ? "text" : "password"}
+                            name="newPassword"
+                            value={editForm.newPassword}
+                            onChange={handleEditFormChange}
+                            className="w-full pl-10 pr-10 px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                            placeholder="Enter new password"
+                          />
+                          <button
+                            type="button"
+                            className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 hover:text-gray-700"
+                            onClick={() => setShowNewPassword(!showNewPassword)}
+                          >
+                            {showNewPassword ? (
+                              <FiEyeOff size={18} />
+                            ) : (
+                              <FiEye size={18} />
+                            )}
+                          </button>
+                        </div>
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                          Confirm New Password
+                        </label>
+                        <div className="relative">
+                          <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                            <FiLock className="text-gray-400" />
+                          </div>
+                          <input
+                            type={showConfirmPassword ? "text" : "password"}
+                            name="confirmPassword"
+                            value={editForm.confirmPassword}
+                            onChange={handleEditFormChange}
+                            className="w-full pl-10 pr-10 px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                            placeholder="Confirm new password"
+                          />
+                          <button
+                            type="button"
+                            className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 hover:text-gray-700"
+                            onClick={() =>
+                              setShowConfirmPassword(!showConfirmPassword)
+                            }
+                          >
+                            {showConfirmPassword ? (
+                              <FiEyeOff size={18} />
+                            ) : (
+                              <FiEye size={18} />
+                            )}
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* Password error message */}
+                      {passwordError && (
+                        <div className="bg-red-50 border-l-4 border-red-500 p-3 rounded">
+                          <p className="flex items-center gap-2 text-sm text-red-700">
+                            <FiAlertCircle className="h-4 w-4 flex-shrink-0" />
+                            {passwordError}
+                          </p>
+                        </div>
+                      )}
+
+                      <p className="text-xs text-gray-500 italic">
+                        Leave password fields empty if you don't want to change
+                        it
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Buttons */}
+                  <div className="flex gap-3 pt-2">
+                    <button
+                      type="button"
+                      onClick={() => setIsEditModalOpen(false)}
+                      className="flex-1 px-4 py-2.5 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 font-medium transition-colors"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="submit"
+                      className="flex-1 px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-lg hover:from-blue-700 hover:to-indigo-700 font-medium transition-all shadow-sm hover:shadow"
+                    >
+                      Save Changes
+                    </button>
+                  </div>
+                </div>
+              </form>
             </div>
           </div>
-        </form>
-      </div>
-    </div>
-  </div>
-)}
+        </div>
+      )}
     </div>
   );
 }
