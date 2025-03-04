@@ -1,20 +1,37 @@
 import express from "express";
-import {
-  getPendingShelters,
-  approveShelter,
-  rejectShelter,
-  createAdmin,
-} from "../controllers/adminController.js";
+import * as adminController from "../controllers/adminController.js";
 import { authenticate, authorize } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
-// Protect all routes - only admin access
+// Apply authentication middleware to all routes
 router.use(authenticate, authorize("admin"));
 
-router.post("/create-admin", createAdmin); // Only existing admin can create new admin
-router.get("/shelters/pending", getPendingShelters);
-router.patch("/shelters/approve/:id", approveShelter);
-router.patch("/shelters/reject/:id", rejectShelter);
+// Dashboard stats
+router.get("/stats", adminController.getAdminStats);
+
+// User management
+router.get("/users", adminController.getAllUsers);
+router.get("/shelters", adminController.getAllShelters);
+router.get("/shelters/pending", adminController.getPendingShelters);
+router.delete("/users/:id", adminController.deleteUser);
+router.delete("/shelters/:id", adminController.deleteShelter);
+
+// Shelter approval/rejection
+router.patch("/shelters/:id/approve", adminController.approveShelter);
+router.patch("/shelters/:id/reject", adminController.rejectShelter);
+
+// System health
+router.get("/system-health", adminController.getSystemHealth);
+router.get("/system-history/:timeframe", adminController.getSystemHistory);
+
+// Insights and analytics
+router.get("/insights", adminController.getInsights);
+
+// Admin creation
+router.post("/create-admin", adminController.createAdmin);
+
+//Generate reports
+router.get("/reports/generate", adminController.generateReport);
 
 export default router;

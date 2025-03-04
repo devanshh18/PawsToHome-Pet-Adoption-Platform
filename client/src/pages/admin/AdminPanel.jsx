@@ -1,193 +1,211 @@
-import { useEffect, useState, useCallback } from "react";
-import { useDispatch, useSelector } from "react-redux";
+// client/src/pages/admin/AdminLayout.jsx
+
+import { useState, useEffect } from "react";
+import { Tab } from "@headlessui/react";
 import {
-  getPendingShelters,
-  approveShelter,
-  rejectShelter,
-} from "../../features/admin/adminService";
-import { endLoading, setPendingShelters, startLoading } from "../../features/admin/adminSlice";
-import { toast } from "react-toastify";
+  FiLogOut,
+  FiHome,
+  FiUsers,
+  FiActivity,
+  FiBarChart2,
+  FiUser,
+} from "react-icons/fi";
+import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { logout } from "../../features/auth/authSlice";
+import DashboardTab from "../../components/admin-facing/DashboardTab";
+import UserManagementTab from "../../components/admin-facing/UserManagementTab";
+import SystemHealthTab from "../../components/admin-facing/SystemHealthTab";
+import InsightsTab from "../../components/admin-facing/InsightsTab";
 import LoadingSpinner from "../../components/shared/LoadingSpinner";
 
-export default function AdminPanel() {
+export default function AdminLayout() {
+  const { user } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
-  const { pendingShelters, isLoading } = useSelector((state) => state.admin);
-  const [rejectReason, setRejectReason] = useState("");
-  const [selectedShelterId, setSelectedShelterId] = useState(null);
+  const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
-  const fetchPendingShelters = useCallback(async () => {
+  const tabs = [
+    { name: "Dashboard", icon: FiHome },
+    { name: "User Management", icon: FiUsers },
+    { name: "System Health", icon: FiActivity },
+    { name: "Insights & Exports", icon: FiBarChart2 },
+  ];
+
+  const handleLogout = async () => {
     try {
-      dispatch(startLoading());
-      const response = await getPendingShelters();
-      dispatch(setPendingShelters(response.shelters));
+      // Call logout API endpoint
+      await fetch("/api/auth/logout", {
+        method: "POST",
+        credentials: "include",
+      });
+
+      // Clear Redux state
+      dispatch(logout());
+
+      // Navigate to login
+      navigate("/login");
     } catch (error) {
-      dispatch(endLoading());
-      const errorMessage =
-        error.response?.data?.message || "Failed to load pending shelters";
-      toast.error(errorMessage);
+      console.error("Logout failed:", error);
     }
-  }, [dispatch]);
+  };
 
   useEffect(() => {
-    fetchPendingShelters();
-  }, [fetchPendingShelters]);
-
-  const handleApprove = async (id) => {
-    try {
-      dispatch(startLoading());
-      await approveShelter(id);
-      toast.success("Shelter approved successfully");
-      fetchPendingShelters();
-    } catch (error) {
-      dispatch(endLoading());
-      const errorMessage =
-        error.response?.data?.message || "Failed to approve shelter";
-      toast.error(errorMessage);
-    }
-  };
-
-  const handleReject = async (id) => {
-    if (!rejectReason) {
-      toast.error("Please provide a reason for rejection");
+    // Check if user is authenticated and is an admin
+    if (!user) {
+      navigate("/login");
       return;
     }
-    try {
-      dispatch(startLoading());
-      await rejectShelter(id, rejectReason);
-      toast.success("Shelter rejected");
-      setRejectReason("");
-      setSelectedShelterId(null);
-      fetchPendingShelters();
-    } catch (error) {
-      dispatch(endLoading());
-      const errorMessage =
-        error.response?.data?.message || "Failed to reject shelter";
-      toast.error(errorMessage);
+    if (user.role !== "admin") {
+      navigate("/");
+      return;
     }
-  };
-
-  if (isLoading) {
-    return <LoadingSpinner />;
-  }
+    setIsLoading(false);
+  }, [user, navigate]);
 
   return (
-    <div className="max-w-4xl mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-6">Pending Shelter Approvals</h1>
+    <div className="min-h-screen bg-gray-50/95">
+      {isLoading && <LoadingSpinner />}
 
-      {pendingShelters.length === 0 ? (
-        <p className="text-gray-600">No pending shelter applications</p>
-      ) : (
-        <div className="space-y-4">
-          {pendingShelters.map((shelter) => (
-            <div key={shelter._id} className="bg-white p-4 rounded-lg shadow">
-              <h2 className="text-xl font-semibold">{shelter.shelterName}</h2>
-              {/* <div className="mt-2 space-y-1">
-                <p>
-                  <span className="font-medium">Contact:</span> {shelter.name}
-                </p>
-                <p>
-                  <span className="font-medium">Email:</span> {shelter.email}
-                </p>
-                <p>
-                  <span className="font-medium">Phone:</span> {shelter.phoneNo}
-                </p>
-                <p>
-                  <span className="font-medium">Address:</span>{" "}
-                  {shelter.address}
-                </p>
-                <a
-                  href={shelter.licenseDocument}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-blue-500 hover:underline"
+      <Tab.Group vertical>
+        {/* Mobile Menu Button */}
+        <button
+          onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+          className="lg:hidden fixed top-4 left-4 z-50 p-2 rounded-lg bg-white shadow-lg"
+        >
+          <svg
+            className="w-6 h-6 text-gray-600"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d={
+                isSidebarOpen
+                  ? "M6 18L18 6M6 6l12 12"
+                  : "M4 6h16M4 12h16M4 18h16"
+              }
+            />
+          </svg>
+        </button>
+
+        {/* Sidebar */}
+        <aside
+          className={`
+    fixed left-0 top-0 h-screen bg-gradient-to-b from-blue-50 to-white border-r border-gray-100 z-40
+    transition-all duration-300 transform
+    ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"}
+    lg:translate-x-0 lg:w-64 w-72
+  `}
+        >
+          <div className="flex flex-col h-full">
+            {/* Logo */}
+            <div className="p-6 border-b border-gray-100">
+              <span className="text-3xl font-bold text-blue-600">
+                PawsToHome
+              </span>
+            </div>
+
+            {/* Navigation */}
+            <Tab.List className="flex-1 space-y-2 p-4">
+              {tabs.map((tab) => (
+                <Tab
+                  key={tab.name}
+                  className="focus:outline-none w-full"
+                  onClick={() => setIsSidebarOpen(false)}
                 >
-                  View License Document
-                </a>
-              </div> */}
-              <div className="grid md:grid-cols-2 gap-4 mb-4">
-                <div>
-                  <p className="text-gray-600">
-                    <strong>Shelter Name:</strong> {shelter.name}
-                  </p>
-                  <p className="text-gray-600">
-                    <strong>Email:</strong> {shelter.email}
-                  </p>
-                  <p className="text-gray-600">
-                    <strong>Phone:</strong> {shelter.phoneNo}
-                  </p>
-                </div>
-
-                <div>
-                  <p className="text-gray-600">
-                    <strong>State:</strong> {shelter.state}
-                  </p>
-                  <p className="text-gray-600">
-                    <strong>City:</strong> {shelter.city}
-                  </p>
-                  <p className="text-gray-600">
-                    <strong>Address:</strong> {shelter.address}
-                  </p>
-                </div>
-              </div>
-
-              <div className="mb-4">
-                <a
-                  href={shelter.licenseDocument}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-blue-500 hover:text-blue-700"
-                >
-                  View License Document
-                </a>
-              </div>
-
-              <div className="mt-4 flex gap-4">
-                <button
-                  onClick={() => handleApprove(shelter._id)}
-                  className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
-                >
-                  Approve
-                </button>
-                <button
-                  onClick={() => setSelectedShelterId(shelter._id)}
-                  className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
-                >
-                  Reject
-                </button>
-              </div>
-
-              {selectedShelterId === shelter._id && (
-                <div className="mt-4">
-                  <textarea
-                    value={rejectReason}
-                    onChange={(e) => setRejectReason(e.target.value)}
-                    placeholder="Enter reason for rejection"
-                    className="w-full p-2 border rounded"
-                    rows="3"
-                  />
-                  <div className="mt-2 flex gap-2">
-                    <button
-                      onClick={() => handleReject(shelter._id)}
-                      className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+                  {({ selected }) => (
+                    <div
+                      className={`
+                w-full flex items-center gap-3 px-4 py-3 rounded-xl text-lg font-medium transition-all
+                ${
+                  selected
+                    ? "bg-white text-blue-600 shadow-lg shadow-blue-100/50"
+                    : "text-gray-500 hover:bg-white/50 hover:text-blue-500"
+                }
+              `}
                     >
-                      Confirm Rejection
-                    </button>
-                    <button
-                      onClick={() => {
-                        setSelectedShelterId(null);
-                        setRejectReason("");
-                      }}
-                      className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600"
-                    >
-                      Cancel
-                    </button>
+                      <tab.icon
+                        className={`w-5 h-5 ${
+                          selected ? "text-blue-500" : "text-gray-400"
+                        }`}
+                      />
+                      {tab.name}
+                    </div>
+                  )}
+                </Tab>
+              ))}
+            </Tab.List>
+
+            {/* User Profile & Logout */}
+            <div className="p-4 border-t border-gray-100">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-10 h-10 rounded-full bg-gradient-to-r from-blue-600 to-blue-800 flex items-center justify-center text-white text-lg font-bold ring-2 ring-white shadow">
+                  {user?.name?.[0]?.toUpperCase()}
+                </div>
+                <div>
+                  <p className="text-lg font-medium text-gray-800">
+                    {user?.name}
+                  </p>
+                  <p className="text-sm text-gray-500">Administrator</p>
+                </div>
+              </div>
+              <button
+                onClick={handleLogout}
+                className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-white text-red-500 rounded-xl hover:bg-red-50 transition-all text-lg font-medium ring-1 ring-red-100 shadow-sm hover:ring-red-200"
+              >
+                <FiLogOut className="w-4 h-4" />
+                <span>Logout</span>
+              </button>
+            </div>
+          </div>
+        </aside>
+
+        {/* Main Content - Update header gradient */}
+        <main className="lg:ml-64 flex-1 p-4 lg:p-8 mt-16 lg:mt-0">
+          {/* Profile Header */}
+          <div className="relative h-48 bg-gradient-to-r from-blue-600 to-blue-800 max-w-6xl mx-auto rounded-xl overflow-hidden mb-6">
+            <div className="absolute inset-0 bg-black/10" />
+            <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
+              <div className="flex items-center gap-4">
+                <div className="w-16 h-16 rounded-xl bg-white p-0.5">
+                  <div className="w-full h-full rounded-lg bg-gradient-to-r from-blue-400 to-blue-600 flex items-center justify-center">
+                    <span className="text-3xl font-bold text-white">
+                      {user?.name?.[0]?.toUpperCase() || "A"}
+                    </span>
                   </div>
                 </div>
-              )}
+                <div>
+                  <h1 className="text-4xl font-bold">{user?.name}</h1>
+                  <p className="text-lg text-blue-100 mt-0.5">
+                    Administration Panel
+                  </p>
+                </div>
+              </div>
             </div>
-          ))}
-        </div>
-      )}
+          </div>
+
+          <Tab.Panels className="max-w-6xl mx-auto">
+            {tabs.map((tab, idx) => (
+              <Tab.Panel
+                key={tab.name}
+                className="bg-white rounded-xl lg:rounded-2xl transition-opacity duration-300"
+              >
+                <div className="opacity-100">
+                  {idx === 0 && <DashboardTab />}
+                  {idx === 1 && <UserManagementTab />}
+                  {idx === 2 && <SystemHealthTab />}
+                  {idx === 3 && <InsightsTab />}
+                </div>
+              </Tab.Panel>
+            ))}
+          </Tab.Panels>
+        </main>
+      </Tab.Group>
     </div>
   );
 }
