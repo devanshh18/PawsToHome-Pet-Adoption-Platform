@@ -544,7 +544,7 @@ export default function PetSearch() {
                         <img
                           src={pet.photos[0]}
                           alt={pet.name}
-                          className="w-full h-full object-cover transition-transform duration-500 hover:scale-110"
+                          className="w-full h-full object-fill transition-transform duration-500 hover:scale-110"
                         />
                       </div>
 

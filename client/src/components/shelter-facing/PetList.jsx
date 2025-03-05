@@ -74,7 +74,7 @@ export default function PetList() {
                 <img
                   src={pet.photos[0]}
                   alt={pet.name}
-                  className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 min-w-full min-h-full object-cover transform-gpu transition-transform duration-300 group-hover:scale-105"
+                  className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full object-fill transform-gpu transition-transform duration-300 group-hover:scale-105"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/40" />
                 <div className="absolute top-3 right-3 flex gap-2">

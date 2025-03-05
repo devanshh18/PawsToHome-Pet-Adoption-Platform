@@ -1,7 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchPetById, searchPetsByLocation } from "../../features/pets/petSlice";
+import {
+  fetchPetById,
+  searchPetsByLocation,
+} from "../../features/pets/petSlice";
 import LoadingSpinner from "../shared/LoadingSpinner";
 import Slider from "react-slick";
 import { motion, AnimatePresence } from "framer-motion";
@@ -578,7 +581,7 @@ export default function PetDetails() {
           </div>
         </div>
 
-        {/* Similar Pets Section - Optional */}
+        {/* Similar Pets Section */}
         <div className="my-10">
           <div className="text-center mb-8">
             <h2 className="text-2xl font-bold text-gray-800">
@@ -636,7 +639,7 @@ export default function PetDetails() {
                         <img
                           src={pet.photos[0]}
                           alt={pet.name}
-                          className="w-full h-full object-cover transition-transform hover:scale-105 duration-300"
+                          className="w-full h-full object-fill  bg-gray-100 transition-transform hover:scale-105 duration-300"
                         />
                         <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-4">
                           <p className="text-white font-medium truncate">
