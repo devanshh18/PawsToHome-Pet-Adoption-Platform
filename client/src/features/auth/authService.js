@@ -24,3 +24,8 @@ export const registerShelter = async (data) => {
   const response = await API.post("/register/shelter", data);
   return response.data;
 };
+
+export const updateUserProfile = async (data) => {
+  const response = await API.put("/update-profile", data);
+  return response.data;
+};

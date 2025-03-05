@@ -82,7 +82,7 @@ const Footer = () => {
                   placeholder="Enter your email"
                   className="flex-1 p-2 border rounded-lg focus:outline-none focus:ring-1"
                 />
-                <button className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600">
+                <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
                   Subscribe
                 </button>
               </div>
@@ -112,7 +112,7 @@ const Footer = () => {
               href="https://twitter.com"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-gray-600 hover:text-blue-600"
+              className="text-gray-600 hover:text-cyan-600"
             >
               <FaTwitter className="w-6 h-6" />
             </a>
@@ -120,7 +120,7 @@ const Footer = () => {
               href="https://instagram.com"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-gray-600 hover:text-blue-600"
+              className="text-gray-600 hover:text-rose-600"
             >
               <FaInstagram className="w-6 h-6" />
             </a>
@@ -128,7 +128,7 @@ const Footer = () => {
               href="https://youtube.com"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-gray-600 hover:text-blue-600"
+              className="text-gray-600 hover:text-red-600"
             >
               <FaYoutube className="w-6 h-6" />
             </a>

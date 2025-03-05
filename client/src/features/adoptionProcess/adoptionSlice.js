@@ -3,10 +3,12 @@ import {
   submitAdoptionApplication,
   getShelterApplications,
   updateApplicationStatus,
+  getUserApplications,
 } from "./adoptionServices.js";
 
 const initialState = {
   applications: [],
+  userApplications: [],
   isLoading: false,
   error: null,
   success: false,
@@ -30,6 +32,19 @@ export const fetchShelterApplications = createAsyncThunk(
       return await getShelterApplications();
     } catch (error) {
       return thunkAPI.rejectWithValue(error.response?.data?.message);
+    }
+  }
+);
+
+export const fetchUserApplications = createAsyncThunk(
+  "adoption/getUserApplications",
+  async (_, thunkAPI) => {
+    try {
+      return await getUserApplications();
+    } catch (error) {
+      return thunkAPI.rejectWithValue(
+        error.response?.data?.message || "Failed to fetch applications"
+      );
     }
   }
 );
@@ -70,7 +85,7 @@ const adoptionSlice = createSlice({
         state.isLoading = false;
         state.error = action.payload;
       })
-      // Fetch Applications
+      // Fetch Shelter Applications
       .addCase(fetchShelterApplications.pending, (state) => {
         state.isLoading = true;
         state.error = null;
@@ -83,6 +98,20 @@ const adoptionSlice = createSlice({
         state.isLoading = false;
         state.error = action.payload;
       })
+      // Fetch User Applications
+      .addCase(fetchUserApplications.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(fetchUserApplications.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.userApplications = action.payload.applications;
+      })
+      .addCase(fetchUserApplications.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload;
+      })
+      //Update Applications
       .addCase(updateApplication.pending, (state) => {
         state.isLoading = true;
         state.error = null;

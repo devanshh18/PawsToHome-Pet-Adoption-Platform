@@ -1,6 +1,10 @@
 import { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import { checkAuthStatus, updateProfile } from "../../features/auth/authSlice";
+import { fetchUserApplications } from "../../features/adoptionProcess/adoptionSlice";
+import { fetchUserPosts } from "../../features/post/postSlice";
+
 import LoadingSpinner from "../shared/LoadingSpinner";
 import PostCard from "./PostCard";
 import {
@@ -23,18 +27,21 @@ import {
 } from "react-icons/fi";
 import { motion, AnimatePresence } from "framer-motion";
 import { format } from "date-fns";
-import axios from "axios";
 import { toast } from "react-toastify";
 
 export default function MyAccount() {
   const { user } = useSelector((state) => state.auth);
+  const { userApplications, isLoading: adoptionLoading } = useSelector(
+    (state) => state.adoption
+  );
+  const { userPosts, isLoading: postsLoading } = useSelector(
+    (state) => state.posts
+  );
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const tabFromUrl = searchParams.get("tab");
   const [activeTab, setActiveTab] = useState(tabFromUrl || "personal");
-  const [userDetails, setUserDetails] = useState(null);
-  const [adoptionRequests, setAdoptionRequests] = useState([]);
-  const [userPosts, setUserPosts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
@@ -55,60 +62,26 @@ export default function MyAccount() {
 
       setIsLoading(true);
       try {
-        // Fetch user details
-        try {
-          const userResponse = await axios.get(
-            "http://localhost:5000/api/auth/me",
-            { withCredentials: true }
-          );
-          setUserDetails(userResponse.data.user);
-          setEditForm({
-            name: userResponse.data.user.name || "",
-            phoneNo: userResponse.data.user.phoneNo || "",
-            currentPassword: "",
-            newPassword: "",
-            confirmPassword: "",
-          });
-        } catch (err) {
-          console.log("Error fetching user details:", err);
-        }
+        setEditForm({
+          name: user.name || "",
+          phoneNo: user.phoneNo || "",
+          currentPassword: "",
+          newPassword: "",
+          confirmPassword: "",
+        });
 
-        // Fetch adoption requests
-        try {
-          const adoptionsResponse = await axios.get(
-            "http://localhost:5000/api/adoptions/user",
-            { withCredentials: true }
-          );
-          setAdoptionRequests(adoptionsResponse.data.applications || []);
-        } catch (err) {
-          console.log("Error fetching adoptions:", err);
-          setAdoptionRequests([]);
-        }
-
-        // Fetch user posts
-        try {
-          const postsResponse = await axios.get(
-            "http://localhost:5000/api/posts/user",
-            { withCredentials: true }
-          );
-          console.log("Posts response:", postsResponse.data);
-          setUserPosts(postsResponse.data.posts || []);
-        } catch (err) {
-          console.error("Error fetching posts:", err);
-          console.error("Error details:", err.response?.data);
-          setUserPosts([]);
-        }
-      } catch (error) {
-        toast.error(
-          error.response?.data?.message || "Error fetching account data"
-        );
+        await dispatch(fetchUserApplications()).unwrap();
+        await dispatch(fetchUserPosts()).unwrap();
+      } catch (err) {
+        console.error("Error fetching user data:", err);
+        toast.error("Failed to load user data");
       } finally {
         setIsLoading(false);
       }
     };
 
     fetchUserData();
-  }, [user]);
+  }, [dispatch, user]);
 
   // Handle tab changes
   const handleTabChange = (tab) => {
@@ -149,25 +122,17 @@ export default function MyAccount() {
     }
 
     try {
-      const response = await axios.put(
-        "http://localhost:5000/api/auth/update-profile",
-        updateData,
-        { withCredentials: true }
-      );
-
-      setUserDetails(response.data.user);
+      await dispatch(updateProfile(updateData)).unwrap();
       setIsEditModalOpen(false);
       toast.success("Profile updated successfully");
     } catch (error) {
       console.error("Update error:", error);
-      if (error.response?.data?.message) {
-        if (error.response.data.message.includes("password")) {
-          setPasswordError(error.response.data.message);
-        } else {
-          toast.error(error.response.data.message);
-        }
+
+      // Handle password specific errors
+      if (error.message && error.message.includes("password")) {
+        setPasswordError(error.message);
       } else {
-        toast.error("Error updating profile");
+        toast.error(error.message || "Error updating profile");
       }
     }
   };
@@ -216,7 +181,7 @@ export default function MyAccount() {
     }
   };
 
-  if (isLoading) {
+  if (isLoading || adoptionLoading || postsLoading) {
     return <LoadingSpinner />;
   }
 
@@ -303,7 +268,7 @@ export default function MyAccount() {
                       </div>
                       <div>
                         <h2 className="text-2xl font-bold text-gray-800">
-                          {userDetails?.name}
+                          {user?.name}
                         </h2>
                         <p className="text-gray-500">Adopter Account</p>
                       </div>
@@ -315,9 +280,7 @@ export default function MyAccount() {
                           <FiMail className="text-blue-600" />
                           <h3 className="font-medium text-gray-700">Email</h3>
                         </div>
-                        <p className="ml-8 text-gray-800">
-                          {userDetails?.email}
-                        </p>
+                        <p className="ml-8 text-gray-800">{user?.email}</p>
                       </div>
                       <div className="bg-gray-50 p-4 rounded-lg">
                         <div className="flex items-center gap-3 mb-1">
@@ -325,7 +288,7 @@ export default function MyAccount() {
                           <h3 className="font-medium text-gray-700">Phone</h3>
                         </div>
                         <p className="ml-8 text-gray-800">
-                          {userDetails?.phoneNo || "Not specified"}
+                          {user?.phoneNo || "Not specified"}
                         </p>
                       </div>
                       <div className="bg-gray-50 p-4 rounded-lg">
@@ -334,11 +297,8 @@ export default function MyAccount() {
                           <h3 className="font-medium text-gray-700">Joined</h3>
                         </div>
                         <p className="ml-8 text-gray-800">
-                          {userDetails?.createdAt
-                            ? format(
-                                new Date(userDetails.createdAt),
-                                "MMMM d, yyyy"
-                              )
+                          {user?.createdAt
+                            ? format(new Date(user.createdAt), "MMMM d, yyyy")
                             : "Not available"}
                         </p>
                       </div>
@@ -374,7 +334,7 @@ export default function MyAccount() {
                   exit={{ opacity: 0, y: -10 }}
                   transition={{ duration: 0.2 }}
                 >
-                  {adoptionRequests.length === 0 ? (
+                  {userApplications.length === 0 ? (
                     <div className="text-center py-12">
                       <div className="h-20 w-20 rounded-full bg-gray-100 flex items-center justify-center mx-auto mb-4">
                         <FiHome className="h-10 w-10 text-gray-400" />
@@ -395,7 +355,7 @@ export default function MyAccount() {
                     </div>
                   ) : (
                     <div className="space-y-4">
-                      {adoptionRequests.map((request) => (
+                      {userApplications.map((request) => (
                         <motion.div
                           key={request._id}
                           whileHover={{ scale: 1.01 }}
@@ -443,7 +403,11 @@ export default function MyAccount() {
                                 </p>
                                 <p className="text-sm text-gray-500 mb-2">
                                   <span className="font-medium">Shelter:</span>{" "}
-                                  {request.petId.shelterId.name}
+                                  {request.petId && request.petId.shelterId
+                                    ? request.petId.shelterId.shelterName ||
+                                      request.petId.shelterId.name ||
+                                      "Unknown Shelter"
+                                    : "Unknown Shelter"}
                                 </p>
 
                                 {request.status === "rejected" &&
@@ -516,7 +480,7 @@ export default function MyAccount() {
                       </Link>
                     </div>
                   ) : (
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
                       {userPosts.map((post) => (
                         <PostCard key={post._id} post={post} />
                       ))}

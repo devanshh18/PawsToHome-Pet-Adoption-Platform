@@ -59,13 +59,12 @@ function ShelterDetails() {
             searchPetsByLocation({
               city: selectedShelter.city,
               state: selectedShelter.state,
-              shelterId: id, // Add this parameter to filter by shelter ID
             })
           ).unwrap();
 
           // Filter to only include available pets
           const availablePets = response.filter(
-            (pet) => pet.status === "Available"
+            (pet) => pet.status === "Available" && pet.shelterId._id === id
           );
           setShelterPets(availablePets);
         } catch (error) {

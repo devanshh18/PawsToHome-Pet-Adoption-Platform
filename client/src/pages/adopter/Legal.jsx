@@ -68,7 +68,7 @@ const LegalPage = () => {
       <motion.section
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        className="bg-gradient-to-r from-blue-800 to-purple-900 text-white py-20 px-4"
+        className="bg-gradient-to-r from-blue-600 to-blue-800 text-white py-20 px-4"
       >
         <div className="max-w-6xl mx-auto text-center">
           <motion.div

@@ -96,8 +96,21 @@ export const toggleLike = createAsyncThunk(
   }
 );
 
+export const fetchUserPosts = createAsyncThunk(
+  "posts/fetchUserPosts",
+  async (_, thunkAPI) => {
+    try {
+      return await postService.getUserPosts();
+    } catch (error) {
+      const message = error.message || "Failed to fetch your posts";
+      return thunkAPI.rejectWithValue(message);
+    }
+  }
+);
+
 const initialState = {
   posts: [],
+  userPosts: [],
   selectedPost: null,
   isLoading: false,
   isSuccess: false,
@@ -214,6 +227,18 @@ const postSlice = createSlice({
         if (state.selectedPost) {
           state.selectedPost.likes = action.payload.likes;
         }
+      })
+      .addCase(fetchUserPosts.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(fetchUserPosts.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.userPosts = action.payload.posts;
+      })
+      .addCase(fetchUserPosts.rejected, (state, action) => {
+        state.isLoading = false;
+        state.isError = true;
+        state.message = action.payload;
       });
   },
 });

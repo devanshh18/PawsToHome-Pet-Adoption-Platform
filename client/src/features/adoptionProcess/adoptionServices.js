@@ -15,6 +15,11 @@ export const getShelterApplications = async () => {
   return response.data;
 };
 
+export const getUserApplications = async () => {
+  const response = await API.get("/user");
+  return response.data;
+};
+
 export const updateApplicationStatus = async (id, statusData) => {
   const response = await API.patch(`/${id}/status`, statusData);
   return response.data;

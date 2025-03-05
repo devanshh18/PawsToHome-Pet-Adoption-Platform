@@ -67,7 +67,7 @@ const updatePost = async (id, postData) => {
   try {
     console.log("Updating post with ID:", id);
     console.log("Update data contains keys:", [...postData.keys()]);
-    
+
     const response = await API.put(`/${id}`, postData, {
       headers: {
         "Content-Type": "multipart/form-data",
@@ -122,6 +122,19 @@ const toggleLike = async (postId) => {
   }
 };
 
+// Get user posts
+const getUserPosts = async () => {
+  try {
+    const response = await API.get("/user");
+    return response.data;
+  } catch (error) {
+    if (error.response && error.response.data) {
+      throw error.response.data;
+    }
+    throw error;
+  }
+};
+
 const postService = {
   getAllPosts,
   getPostById,
@@ -130,6 +143,7 @@ const postService = {
   deletePost,
   addComment,
   toggleLike,
+  getUserPosts,
 };
 
 export default postService;

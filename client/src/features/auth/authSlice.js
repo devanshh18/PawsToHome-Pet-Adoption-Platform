@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { API } from "./authService";
+import { API, updateUserProfile } from "./authService";
 
 const initialState = {
   user: null,
@@ -16,7 +16,23 @@ export const checkAuthStatus = createAsyncThunk(
       const response = await API.get("/me");
       return response.data.user;
     } catch (error) {
-      return thunkAPI.rejectWithValue(error.response.data);
+      return thunkAPI.rejectWithValue(
+        error.response?.data || { message: "Authentication failed" }
+      );
+    }
+  }
+);
+
+export const updateProfile = createAsyncThunk(
+  "auth/updateProfile",
+  async (userData, thunkAPI) => {
+    try {
+      const response = await updateUserProfile(userData);
+      return response.user;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(
+        error.response?.data || { message: "Failed to update profile" }
+      );
     }
   }
 );
@@ -60,6 +76,22 @@ const authSlice = createSlice({
         state.isError = true;
         state.message = action.payload?.message || "Authentication failed";
         state.user = null;
+      })
+      // Update profile cases
+      .addCase(updateProfile.pending, (state) => {
+        state.isLoading = true;
+        state.isError = false;
+        state.message = "";
+      })
+      .addCase(updateProfile.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.isSuccess = true;
+        state.user = action.payload;
+      })
+      .addCase(updateProfile.rejected, (state, action) => {
+        state.isLoading = false;
+        state.isError = true;
+        state.message = action.payload?.message || "Failed to update profile";
       });
   },
 });

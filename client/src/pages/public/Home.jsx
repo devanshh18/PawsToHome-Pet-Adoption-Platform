@@ -216,20 +216,26 @@ export default function Home() {
     ],
   };
 
+  const cardColors = [
+    "bg-teal-300", // Teal background
+    "bg-blue-400", // Blue background
+    "bg-yellow-400", // Yellow background
+  ];
+
   return (
     <div className="min-h-screen">
-      {/* Hero Section */}
+      {/* Hero Section - Adding responsive height and positioning */}
       <div
-        className="relative h-177.5 bg-[url('/src/assets/hero-bg.jpg')] bg-cover bg-no-repeat"
+        className="relative h-[75vh] md:h-177.5 bg-[url('/src/assets/hero-bg.jpg')] bg-cover bg-no-repeat"
         style={{ backgroundPosition: "center top 75.5%" }}
       >
         <div className="absolute inset-0 bg-gradient-to-r from-gray-900/60 to-transparent" />
         <motion.div
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
-          className="absolute top-50 left-20 text-white max-w-2xl"
+          className="absolute top-1/4 md:top-50 left-5 md:left-20 text-white max-w-full md:max-w-2xl px-4 md:px-0"
         >
-          <h1 className="text-8xl font-semibold mb-4 text-[Poppins] drop-shadow-md">
+          <h1 className="text-4xl md:text-6xl lg:text-8xl font-semibold mb-4 text-[Poppins] drop-shadow-md">
             Ready to <br /> adopt a pet
             <motion.span
               animate={{
@@ -246,24 +252,24 @@ export default function Home() {
               ?
             </motion.span>
           </h1>
-          <p className="text-lg font-medium mb-6 text-gray-300 drop-shadow-md">
+          <p className="text-base md:text-lg font-medium mb-6 text-gray-300 drop-shadow-md">
             Let&apos;s get started. Search pets from shelters, rescues, and
             individuals.
           </p>
         </motion.div>
 
-        {/* Search Container */}
+        {/* Search Container - Mobile responsive adjustments */}
         <motion.div className="absolute bottom-0 w-full">
           <div className="mx-auto max-w-6xl px-4">
-            <motion.div className="bg-blue-50 rounded-t-[35px] p-7 shadow-2xl">
-              {/* Tabs */}
-              <div className="flex gap-0 mb-6">
+            <motion.div className="bg-blue-50 rounded-t-[35px] p-4 md:p-7 shadow-2xl">
+              {/* Tabs - Mobile scrollable */}
+              <div className="flex overflow-x-auto pb-2 md:pb-0 gap-0 mb-4 md:mb-6 scrollbar-hide">
                 {["Dogs", "Cats", "Other Pets", "Shelter/Rescues"].map(
                   (tab) => (
                     <button
                       key={tab}
                       onClick={() => setActiveTab(tab.toLowerCase())}
-                      className={`px-5 py-2 text-lg relative transition-colors ${
+                      className={`px-3 md:px-5 py-2 text-base md:text-lg whitespace-nowrap relative transition-colors ${
                         activeTab === tab.toLowerCase()
                           ? "text-blue-600 font-semibold"
                           : "hover:text-blue-600"
@@ -281,8 +287,8 @@ export default function Home() {
                 )}
               </div>
 
-              {/* Filters */}
-              <div className="flex gap-4">
+              {/* Filters - Stack on mobile */}
+              <div className="flex flex-col md:flex-row gap-4">
                 {["dogs", "cats"].includes(activeTab) ? (
                   <>
                     {["location", "age", "gender"].map((field) => (
@@ -364,7 +370,7 @@ export default function Home() {
                   onClick={handleSearch}
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  className="w-48 bg-blue-600 text-white rounded-lg flex items-center justify-center gap-2 text-lg shadow-lg hover:bg-blue-700"
+                  className="w-full md:w-48 bg-blue-600 text-white rounded-lg h-12 md:h-auto flex items-center justify-center gap-2 text-lg shadow-lg hover:bg-blue-700 mt-2 md:mt-0"
                 >
                   <MagnifyingGlassIcon className="w-5 h-5" />
                   {user ? "Search" : "Get Started"}
@@ -373,14 +379,14 @@ export default function Home() {
             </motion.div>
           </div>
 
-          {/* Story Sharing Box */}
+          {/* Story Sharing Box - Mobile responsive */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="bg-blue-100 w-full h-16 flex items-center justify-center"
+            className="bg-blue-100 w-full py-4 md:h-16 flex items-center justify-center px-4 md:px-0"
           >
-            <div className="text-center">
-              <span className="text-lg mr-4 text-blue-800">
+            <div className="text-center flex flex-col md:flex-row items-center">
+              <span className="text-base md:text-lg md:mr-4 text-blue-800 mb-3 md:mb-0">
                 Adopted a Pet? Share your story with the community!
               </span>
               <motion.button
@@ -395,142 +401,134 @@ export default function Home() {
         </motion.div>
       </div>
 
-      {/* Featured Pets Section using react-slick */}
-      <section className="py-16 px-4 max-w-6xl mx-auto">
+      {/* Featured Pets Section - Mobile responsive slider */}
+      <section className="py-12 md:py-16 px-4 max-w-6xl mx-auto">
         <motion.div
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           className="text-center mb-8"
         >
-          <h2 className="text-4xl font-bold mb-2 text-gray-800">
+          <h2 className="text-3xl md:text-4xl font-bold mb-2 text-gray-800">
             Meet featured pets
           </h2>
-          <p className="text-lg text-gray-600">
-            Check out these adorable pets ready to find their forever homes.
+          <p className="text-base md:text-lg text-gray-600">
+            We&apos;re spotlighting a few pets looking for homes.
           </p>
         </motion.div>
-
         {isLoading ? (
-          <div className="flex justify-center items-center h-48">
+          <div className="flex justify-center">
             <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
           </div>
-        ) : (
+        ) : featuredPets.length > 0 ? (
           <div className="relative flex items-center justify-center">
-            {/* Custom Left Button */}
+            {/* Custom Left Button - Hide on mobile */}
             <motion.button
               whileHover={{ scale: 1.1 }}
-              className="absolute -left-16 p-2 rounded-full bg-white shadow-lg hover:bg-blue-50 z-10"
+              className="hidden md:block absolute -left-4 lg:-left-16 p-2 rounded-full bg-white shadow-lg hover:bg-blue-50 z-10"
               onClick={() => sliderRef.current.slickPrev()}
             >
               <ChevronLeftIcon className="w-6 h-6 text-blue-500" />
             </motion.button>
+
             <Slider ref={sliderRef} {...settings} className="w-full">
-              {featuredPets.map((pet) => (
-                <div key={pet._id} className="px-4 py-2">
-                  <motion.div
-                    whileHover={{ scale: 1.03 }}
-                    transition={{ type: "spring", stiffness: 200 }}
-                    className="group relative w-72 h-96 mx-auto cursor-pointer"
+              {featuredPets.map((pet, index) => (
+                <div key={pet._id} className="px-2 md:px-4">
+                  <div
                     onClick={() => navigate(`/pet/${pet._id}`)}
+                    className={`w-full max-w-[300px] mx-auto md:w-72 ${
+                      cardColors[index % cardColors.length]
+                    } rounded-3xl overflow-hidden cursor-pointer transition-all hover:shadow-xl`}
                   >
-                    {/* Glass Card Container */}
-                    <div className="absolute inset-0 rounded-2xl overflow-hidden bg-gradient-to-br from-white/80 to-white/60 backdrop-blur-md shadow-lg border border-white/20 transition-all duration-300 group-hover:shadow-xl group-hover:border-blue-300/30">
-                      {/* Content Container */}
-                      <div className="relative h-full flex flex-col">
-                        {/* Full Image Container - Aspect ratio approach */}
-                        <div className="relative overflow-hidden rounded-t-2xl pt-[80%] bg-gray-100">
-                          <img
-                            src={pet.photos[0]}
-                            alt={pet.name}
-                            className="absolute top-0 left-0 w-full h-full object-fill"
-                            onError={(e) => {
-                              e.target.onerror = null;
-                              e.target.src = "/src/assets/pet-placeholder.jpg";
-                            }}
+                    {/* Image container with curved frame */}
+                    <div className="p-4 pb-0 relative">
+                      {/* Decorative corner accents */}
+                      <div className="absolute top-6 left-6 w-6 h-6 border-t-4 border-l-4 border-white opacity-80 rounded-tl-lg z-10"></div>
+                      <div className="absolute top-6 right-6 w-6 h-6 border-t-4 border-r-4 border-white opacity-80 rounded-tr-lg z-10"></div>
+                      <div className="absolute bottom-2 left-6 w-6 h-6 border-b-4 border-l-4 border-white opacity-80 rounded-bl-lg z-10"></div>
+                      <div className="absolute bottom-2 right-6 w-6 h-6 border-b-4 border-r-4 border-white opacity-80 rounded-br-lg z-10"></div>
+
+                      {/* Main image container with enhanced styling */}
+                      <div className="overflow-hidden rounded-3xl shadow-lg transform transition-all duration-300 hover:scale-[1.03] hover:shadow-xl">
+                        {/* Gradient overlay frame */}
+                        <div className="relative">
+                          <div
+                            className="h-48 md:h-64 bg-cover bg-center transition-transform duration-700 hover:scale-110"
+                            style={{ backgroundImage: `url(${pet.photos[0]})` }}
                           />
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/45 to-transparent"></div>
 
-                          {/* Pet Name Overlay */}
-                          <motion.div
-                            initial={{ opacity: 0.8, y: 5 }}
-                            whileHover={{ opacity: 1, y: 0 }}
-                            className="absolute bottom-0 left-0 right-0 p-4 text-white"
-                          >
-                            <h3 className="text-xl font-bold tracking-wide drop-shadow-md">
-                              {pet.name}
-                            </h3>
-                          </motion.div>
-                        </div>
+                          {/* Subtle gradient overlay */}
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent opacity-70"></div>
 
-                        {/* Pet Details with Modern Layout */}
-                        <div className="flex-1 p-5 flex flex-col">
-                          <div className="mb-2 flex items-center justify-between">
-                            <span className="text-sm font-medium text-gray-500">
-                              Breed
-                            </span>
-                            <span className="bg-blue-50 text-blue-700 px-2 py-0.5 rounded-full text-xs font-semibold">
-                              {pet.gender}
-                            </span>
-                          </div>
-
-                          <div className="text-gray-700 mb-2 font-medium">
-                            {pet.breed}
-                          </div>
-
-                          <div className="flex items-center ">
-                            <div className="w-2 h-2 bg-blue-500 rounded-full mr-2"></div>
-                            <span className="text-gray-600 text-sm">
-                              {formatPetAge(pet.age)}
-                            </span>
-                          </div>
-
-                          <div className="mt-auto flex items-center pt-3 border-t border-gray-100">
+                          {/* Paw print decorative element */}
+                          <div className="absolute top-4 right-4">
                             <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              className="h-4 w-4 text-blue-400 mr-2"
-                              fill="none"
+                              className="w-6 h-6 text-white opacity-70"
+                              fill="currentColor"
                               viewBox="0 0 24 24"
-                              stroke="currentColor"
                             >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={1.5}
-                                d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-                              />
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={1.5}
-                                d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
-                              />
+                              <path d="M8.25,2.25c-1.5,0-2.75,1.34-2.75,3s1.25,3,2.75,3s2.75-1.34,2.75-3S9.75,2.25,8.25,2.25z M15.75,2.25c-1.5,0-2.75,1.34-2.75,3s1.25,3,2.75,3s2.75-1.34,2.75-3S17.25,2.25,15.75,2.25z M4.5,9.75c-1.5,0-2.75,1.34-2.75,3s1.25,3,2.75,3s2.75-1.34,2.75-3S6,9.75,4.5,9.75z M19.5,9.75c-1.5,0-2.75,1.34-2.75,3s1.25,3,2.75,3s2.75-1.34,2.75-3S21,9.75,19.5,9.75z M12,11.25c-2.07,0-3.75,1.68-3.75,3.75v3.75c0,1.24,1.01,2.25,2.25,2.25h3c1.24,0,2.25-1.01,2.25-2.25v-3.75C15.75,12.93,14.07,11.25,12,11.25z" />
                             </svg>
-                            <span className="text-gray-500 text-sm">
-                              {pet.shelterId?.city}, {pet.shelterId?.state}
-                            </span>
                           </div>
                         </div>
                       </div>
+
+                      {/* Available tag - optional */}
+                      <div className="absolute -bottom-2 left-8 bg-green-500 text-white px-3 py-1 rounded-full text-xs font-bold shadow-md">
+                        Available
+                      </div>
                     </div>
-                  </motion.div>
+
+                    {/* Pet information */}
+                    <div className="p-4 pt-2">
+                      <h3 className="text-2xl md:text-3xl font-bold mb-1 text-gray-900">
+                        {pet.name}
+                      </h3>
+                      <p className="text-base md:text-lg font-medium text-gray-800">
+                        {pet.breed}
+                      </p>
+                      <div className="flex flex-col mt-2">
+                        <p className="text-gray-800">
+                          {pet.gender}, {formatPetAge(pet.age) || "Adult"}
+                        </p>
+                        <p className="text-gray-800">
+                          {pet.shelterId && pet.shelterId.city
+                            ? `${pet.shelterId.city}, ${pet.shelterId.state}`
+                            : "Location not available"}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               ))}
             </Slider>
 
-            {/* Custom Right Button */}
+            {/* Custom Right Button - Hide on mobile */}
             <motion.button
               whileHover={{ scale: 1.1 }}
-              className="absolute -right-16 p-2 rounded-full bg-white shadow-lg hover:bg-blue-50 z-10"
+              className="hidden md:block absolute -right-4 lg:-right-16 p-2 rounded-full bg-white shadow-lg hover:bg-blue-50 z-10"
               onClick={() => sliderRef.current.slickNext()}
             >
               <ChevronRightIcon className="w-6 h-6 text-blue-500" />
             </motion.button>
           </div>
+        ) : (
+          <div className="text-center py-8 bg-gray-50 rounded-xl">
+            <p className="text-gray-500">
+              No featured pets available at the moment.
+            </p>
+            <button
+              onClick={() => navigate("/pets")}
+              className="mt-4 px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+            >
+              Browse All Pets
+            </button>
+          </div>
         )}
       </section>
 
-      {/* Statistics Impact Bar */}
-      <section className="py-16 bg-gradient-to-r from-blue-50 to-indigo-50">
+      {/* Statistics Impact Bar - Mobile responsive grid */}
+      {/* Statistics Impact Bar - Mobile responsive grid */}
+      <section className="py-12 md:py-16 bg-gradient-to-r from-blue-50 to-indigo-50">
         <div className="max-w-6xl mx-auto px-4">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -538,25 +536,27 @@ export default function Home() {
             transition={{ duration: 0.7 }}
             className="text-center mb-10"
           >
-            <h2 className="text-3xl font-bold text-gray-800">Our Impact</h2>
+            <h2 className="text-2xl md:text-3xl font-bold text-gray-800">
+              Our Impact
+            </h2>
             <p className="text-gray-600 mt-2">
               Making a difference in the lives of pets and people
             </p>
           </motion.div>
 
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-10">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 lg:gap-10">
             {/* Pets Adopted Stat */}
             <motion.div
-              className="bg-white rounded-2xl p-6 shadow-md text-center"
+              className="bg-white rounded-2xl p-4 md:p-6 shadow-md text-center"
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.1 }}
               whileHover={{ y: -5, transition: { duration: 0.2 } }}
             >
-              <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <div className="w-12 h-12 md:w-16 md:h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3 md:mb-4">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  className="w-8 h-8 text-blue-600"
+                  className="w-6 h-6 md:w-8 md:h-8 text-blue-600"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -570,28 +570,30 @@ export default function Home() {
                 </svg>
               </div>
               <motion.span
-                className="block text-4xl font-bold text-gray-800"
+                className="block text-2xl md:text-4xl font-bold text-gray-800"
                 initial={{ opacity: 0 }}
                 whileInView={{ opacity: 1 }}
                 transition={{ duration: 2 }}
               >
                 <CountUp end={2468} duration={2.5} />
               </motion.span>
-              <span className="text-gray-600 font-medium">Pets Adopted</span>
+              <span className="text-sm md:text-base text-gray-600 font-medium">
+                Pets Adopted
+              </span>
             </motion.div>
 
             {/* Shelter Partners Stat */}
             <motion.div
-              className="bg-white rounded-2xl p-6 shadow-md text-center"
+              className="bg-white rounded-2xl p-4 md:p-6 shadow-md text-center"
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.2 }}
               whileHover={{ y: -5, transition: { duration: 0.2 } }}
             >
-              <div className="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <div className="w-12 h-12 md:w-16 md:h-16 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-3 md:mb-4">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  className="w-8 h-8 text-indigo-600"
+                  className="w-6 h-6 md:w-8 md:h-8 text-indigo-600"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -605,30 +607,30 @@ export default function Home() {
                 </svg>
               </div>
               <motion.span
-                className="block text-4xl font-bold text-gray-800"
+                className="block text-2xl md:text-4xl font-bold text-gray-800"
                 initial={{ opacity: 0 }}
                 whileInView={{ opacity: 1 }}
                 transition={{ duration: 2 }}
               >
                 <CountUp end={183} duration={2.5} />
               </motion.span>
-              <span className="text-gray-600 font-medium">
+              <span className="text-sm md:text-base text-gray-600 font-medium">
                 Shelter Partners
               </span>
             </motion.div>
 
             {/* Active Users Stat */}
             <motion.div
-              className="bg-white rounded-2xl p-6 shadow-md text-center"
+              className="bg-white rounded-2xl p-4 md:p-6 shadow-md text-center"
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.3 }}
               whileHover={{ y: -5, transition: { duration: 0.2 } }}
             >
-              <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <div className="w-12 h-12 md:w-16 md:h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3 md:mb-4">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  className="w-8 h-8 text-green-600"
+                  className="w-6 h-6 md:w-8 md:h-8 text-green-600"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -642,30 +644,30 @@ export default function Home() {
                 </svg>
               </div>
               <motion.span
-                className="block text-4xl font-bold text-gray-800"
+                className="block text-2xl md:text-4xl font-bold text-gray-800"
                 initial={{ opacity: 0 }}
                 whileInView={{ opacity: 1 }}
                 transition={{ duration: 2 }}
               >
                 <CountUp end={5743} duration={2.5} />
               </motion.span>
-              <span className="text-gray-600 font-medium">
+              <span className="text-sm md:text-base text-gray-600 font-medium">
                 Community Members
               </span>
             </motion.div>
 
             {/* Avg Days to Adoption Stat */}
             <motion.div
-              className="bg-white rounded-2xl p-6 shadow-md text-center"
+              className="bg-white rounded-2xl p-4 md:p-6 shadow-md text-center"
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.4 }}
               whileHover={{ y: -5, transition: { duration: 0.2 } }}
             >
-              <div className="w-16 h-16 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <div className="w-12 h-12 md:w-16 md:h-16 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-3 md:mb-4">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  className="w-8 h-8 text-amber-600"
+                  className="w-6 h-6 md:w-8 md:h-8 text-amber-600"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -679,14 +681,14 @@ export default function Home() {
                 </svg>
               </div>
               <motion.span
-                className="block text-4xl font-bold text-gray-800"
+                className="block text-2xl md:text-4xl font-bold text-gray-800"
                 initial={{ opacity: 0 }}
                 whileInView={{ opacity: 1 }}
                 transition={{ duration: 2 }}
               >
                 <CountUp end={14} duration={2.5} />
               </motion.span>
-              <span className="text-gray-600 font-medium">
+              <span className="text-sm md:text-base text-gray-600 font-medium">
                 Days to Forever Home
               </span>
             </motion.div>
@@ -694,33 +696,33 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Why Adopt Section */}
-      <section className="py-16 px-4 ">
-        <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-12 items-center">
+      {/* Why Adopt Section - Mobile responsive layout */}
+      <section className="py-12 md:py-16 px-4">
+        <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-8 md:gap-12 items-center">
           <motion.div
             initial={{ x: -50 }}
             whileInView={{ x: 0 }}
-            className="space-y-6"
+            className="space-y-6 order-2 md:order-1"
           >
-            <h2 className="text-4xl font-bold text-gray-800">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-800">
               Why Choose Adoption?
             </h2>
             <motion.div
-              className="text-lg leading-relaxed text-gray-700 bg-white p-8 rounded-xl shadow-sm border-l-4 border-blue-500"
+              className="text-base md:text-lg leading-relaxed text-gray-700 bg-white p-6 md:p-8 rounded-xl shadow-sm border-l-4 border-blue-500"
               whileHover={{ scale: 1.02 }}
             >
-              Adopting a pet is more than just finding a furry friend; it's
+              Adopting a pet is more than just finding a furry friend; it&apos;s
               about giving a second chance to a life in need. Every year,
               countless animals end up in shelters waiting for a loving home. By
-              adopting, you're not only saving a life but also making space for
-              another pet to be cared for.
+              adopting, you&apos;re not only saving a life but also making space
+              for another pet to be cared for.
             </motion.div>
           </motion.div>
 
           <motion.div
             initial={{ scale: 0.9 }}
             whileInView={{ scale: 1 }}
-            className="h-96 bg-gray-200 rounded-xl overflow-hidden shadow-lg"
+            className="h-64 md:h-96 bg-gray-200 rounded-xl overflow-hidden shadow-lg order-1 md:order-2"
           >
             <div className="w-full h-full bg-[url('/src/assets/why-adopt.jpg')] bg-cover bg-center" />
           </motion.div>

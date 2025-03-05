@@ -200,7 +200,7 @@ export const getUserApplications = async (req, res, next) => {
           select: "name photos breed gender age status",
           populate: {
             path: "shelterId",
-            select: "name",
+            select: "name shelterName email phoneNo",
           },
         },
       ]);
