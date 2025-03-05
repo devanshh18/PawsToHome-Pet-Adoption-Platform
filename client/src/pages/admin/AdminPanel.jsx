@@ -168,10 +168,10 @@ export default function AdminLayout() {
         {/* Main Content - Update header gradient */}
         <main className="lg:ml-64 flex-1 p-4 lg:p-8 mt-16 lg:mt-0">
           {/* Profile Header */}
-          <div className="relative h-48 bg-gradient-to-r from-blue-600 to-blue-800 max-w-6xl mx-auto rounded-xl overflow-hidden mb-6">
+          <div className="relative h-32 bg-gradient-to-r from-blue-600 to-blue-800 max-w-6xl mx-auto rounded-xl overflow-hidden mb-6">
             <div className="absolute inset-0 bg-black/10" />
-            <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
-              <div className="flex items-center gap-4">
+            <div className="absolute bottom-0 left-0 right-0 p-4 text-white">
+              <div className="flex items-center gap-3">
                 <div className="w-16 h-16 rounded-xl bg-white p-0.5">
                   <div className="w-full h-full rounded-lg bg-gradient-to-r from-blue-400 to-blue-600 flex items-center justify-center">
                     <span className="text-3xl font-bold text-white">
