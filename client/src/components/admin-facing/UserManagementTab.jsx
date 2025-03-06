@@ -12,6 +12,7 @@ import {
   FiFilter,
   FiSearch,
   FiFileText,
+  FiAlertCircle,
   FiExternalLink,
 } from "react-icons/fi";
 import { toast } from "react-toastify";
@@ -82,7 +83,7 @@ export default function UserManagementTab() {
       toast.error("Please provide a rejection reason");
       return;
     }
-  
+
     try {
       await dispatch(
         rejectShelterRegistration({
@@ -90,7 +91,7 @@ export default function UserManagementTab() {
           reason: rejectReason,
         })
       ).unwrap();
-      
+
       // Only close the modal and clear state if rejection was successful
       setIsRejectModalOpen(false);
       setRejectReason("");
@@ -472,7 +473,7 @@ export default function UserManagementTab() {
               </div>
             )}
           </Tab.Panel>
-          
+
           {/* Pending Approvals Panel */}
           <Tab.Panel>
             {isLoading ? (
@@ -549,7 +550,9 @@ export default function UserManagementTab() {
                           </div>
 
                           <div className="mb-4">
-                            <p className="text-gray-500 mb-1">License Document</p>
+                            <p className="text-gray-500 mb-1">
+                              License Document
+                            </p>
                             {shelter.licenseDocument ? (
                               <div className="flex items-center justify-between py-3 px-4 bg-blue-50 border border-blue-100 rounded-lg">
                                 <span className="font-medium text-blue-900 flex items-center">
@@ -600,39 +603,118 @@ export default function UserManagementTab() {
 
       {/* Rejection Modal */}
       {isRejectModalOpen && (
-        <div className="fixed inset-0 bg-gray-600 bg-opacity-75 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg max-w-md w-full p-6">
-            <h3 className="text-lg font-medium text-gray-900 mb-4">
-              Reject Shelter Registration
-            </h3>
-            <p className="text-sm text-gray-500 mb-4">
-              Please provide a reason for rejecting this shelter registration.
-              This will be included in the email notification sent to the
-              applicant.
-            </p>
+        <div className="fixed inset-0 bg-gray-900/80 flex items-center justify-center z-50 p-4">
+          <div className="w-full max-w-lg bg-white rounded-2xl shadow-2xl overflow-hidden transform transition-all">
+            {/* Header */}
+            <div className="px-6 pt-6">
+              <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center">
+                  <div className="h-10 w-10 rounded-full bg-red-100 flex items-center justify-center mr-3">
+                    <FiX size={20} className="text-red-600" />
+                  </div>
+                  <h2 className="text-xl font-bold text-gray-800">
+                    Reject Shelter Registration
+                  </h2>
+                </div>
+                <button
+                  onClick={() => setIsRejectModalOpen(false)}
+                  className="p-2 rounded-full hover:bg-gray-100 transition-colors"
+                >
+                  <FiX size={20} className="text-gray-400" />
+                </button>
+              </div>
+              <p className="text-gray-600 text-sm ml-13 pl-0.5">
+                Please provide a detailed explanation for why this registration
+                is being rejected
+              </p>
+            </div>
 
-            <textarea
-              className="w-full px-3 py-2 text-gray-700 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              rows="4"
-              placeholder="Enter rejection reason..."
-              value={rejectReason}
-              onChange={(e) => setRejectReason(e.target.value)}
-            ></textarea>
+            {/* Content */}
+            <div className="px-6 py-5">
+              <div className="mb-4">
+                <div className="flex items-center text-sm text-gray-800 mb-3">
+                  <span className="font-medium">Shelter Name:</span>
+                  <span className="ml-2">
+                    {
+                      pendingShelters.find((s) => s._id === selectedShelterId)
+                        ?.shelterName
+                    }
+                  </span>
+                </div>
 
-            <div className="mt-5 flex justify-end">
+                <div className="relative">
+                  <textarea
+                    value={rejectReason}
+                    onChange={(e) => setRejectReason(e.target.value)}
+                    className={`w-full border ${
+                      !rejectReason.trim() || rejectReason.trim().length < 10
+                        ? "border-red-300"
+                        : "border-gray-200"
+                    } rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500 resize-none`}
+                    rows="5"
+                    placeholder="Enter your rejection reason..."
+                    autoFocus
+                  ></textarea>
+
+                  <div className="flex items-center justify-between mt-2">
+                    <div className="flex items-center">
+                      {(!rejectReason.trim() ||
+                        rejectReason.trim().length < 10) && (
+                        <div className="text-sm text-red-500 flex items-center">
+                          <FiAlertCircle size={14} className="mr-1" />
+                          {!rejectReason.trim()
+                            ? "Rejection reason is required"
+                            : "Reason must be at least 10 characters"}
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="text-xs text-gray-400">
+                      {`${rejectReason.length} characters`}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-amber-50 border-l-2 border-amber-500 pl-4 py-3 pr-3 mb-6">
+                <div className="flex">
+                  <FiAlertCircle className="text-amber-500 mt-0.5 mr-2" />
+                  <div>
+                    <span className="block text-sm font-medium text-amber-800">
+                      Important:
+                    </span>
+                    <span className="block text-sm text-amber-700">
+                      The applicant will receive an email with this rejection
+                      reason. Be professional and constructive with your
+                      feedback.
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Footer */}
+            <div className="px-6 py-4 bg-gray-50 flex justify-end gap-3">
               <button
                 type="button"
-                className="mr-3 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 onClick={() => setIsRejectModalOpen(false)}
+                className="inline-flex items-center px-4 py-2.5 border border-gray-300 rounded-lg text-gray-700 bg-white hover:bg-gray-50 font-medium"
               >
                 Cancel
               </button>
               <button
                 type="button"
-                className="px-4 py-2 text-sm font-medium text-white bg-red-600 border border-transparent rounded-md shadow-sm hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
                 onClick={handleReject}
+                className={`inline-flex items-center px-5 py-2.5 rounded-lg text-white font-medium ${
+                  rejectReason.trim().length >= 10
+                    ? "bg-red-600 hover:bg-red-700"
+                    : "bg-red-300 cursor-not-allowed"
+                }`}
+                disabled={
+                  !rejectReason.trim() || rejectReason.trim().length < 10
+                }
               >
-                Reject Registration
+                <FiX className="mr-2" size={16} /> Reject Registration
               </button>
             </div>
           </div>
@@ -641,3 +723,30 @@ export default function UserManagementTab() {
     </div>
   );
 }
+
+<style jsx>{`
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  @keyframes scaleIn {
+    from {
+      transform: scale(0.95);
+      opacity: 0;
+    }
+    to {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+  .animate-fadeIn {
+    animation: fadeIn 0.3s ease-out;
+  }
+  .animate-scaleIn {
+    animation: scaleIn 0.3s ease-out;
+  }
+`}</style>;
