@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -19,6 +19,7 @@ import {
   FiUser,
   FiCalendar,
   FiSend,
+  FiImage,
 } from "react-icons/fi";
 import { toast } from "react-toastify";
 import LoadingSpinner from "../shared/LoadingSpinner";
@@ -34,7 +35,10 @@ const PostDetail = () => {
   const [comment, setComment] = useState("");
   const [showOptions, setShowOptions] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const [imageViewMode, setImageViewMode] = useState("contain"); // 'contain' or 'cover'
+  const [imageViewMode, setImageViewMode] = useState("contain");
+  const [imageLoading, setImageLoading] = useState(true);
+  const [preloadedImages, setPreloadedImages] = useState({});
+  const imageContainerRef = useRef(null);
 
   // Category styling
   const categoryColors = {
@@ -60,6 +64,50 @@ const PostDetail = () => {
     window.scrollTo(0, 0);
   }, [dispatch, id]);
 
+  // Reset image loading state when changing images
+  useEffect(() => {
+    if (selectedPost?.photos?.length > 0) {
+      setImageLoading(true);
+    }
+  }, [currentImageIndex]);
+
+  // Preload images for better carousel experience
+  useEffect(() => {
+    if (selectedPost?.photos?.length > 1) {
+      const preloadImages = () => {
+        // Create new object to track loaded images
+        const newPreloadedImages = {};
+        
+        // Preload current image and adjacent images
+        const indicesToPreload = [
+          currentImageIndex,
+          (currentImageIndex + 1) % selectedPost.photos.length,
+          (currentImageIndex - 1 + selectedPost.photos.length) % selectedPost.photos.length
+        ];
+        
+        indicesToPreload.forEach((index) => {
+          const img = new Image();
+          img.src = selectedPost.photos[index];
+          img.onload = () => {
+            setPreloadedImages(prev => ({
+              ...prev,
+              [index]: true
+            }));
+          };
+          newPreloadedImages[index] = false;
+        });
+        
+        setPreloadedImages(prev => ({...prev, ...newPreloadedImages}));
+      };
+      
+      preloadImages();
+    }
+  }, [selectedPost?.photos, currentImageIndex]);
+
+  const handleImageLoad = () => {
+    setImageLoading(false);
+  };
+
   const handleCommentSubmit = async (e) => {
     e.preventDefault();
 
@@ -74,7 +122,6 @@ const PostDetail = () => {
     }
 
     if (comment.trim().length > 500) {
-      // Backend limits comment length to 500 chars
       toast.error("Comment must be less than 500 characters");
       return;
     }
@@ -83,12 +130,11 @@ const PostDetail = () => {
       await dispatch(
         addComment({
           postId: id,
-          comment: comment.trim(), // Backend expects 'text', but our action will handle this
+          comment: comment.trim(),
         })
       ).unwrap();
       setComment("");
     } catch (error) {
-      // Enhanced error handling
       if (error?.errors && Array.isArray(error.errors)) {
         toast.error(error.errors[0].message || "Failed to add comment");
       } else if (error?.message) {
@@ -155,6 +201,11 @@ const PostDetail = () => {
 
   const isAuthor = user && selectedPost && user._id === selectedPost.author._id;
   const isLiked = user && selectedPost?.likes?.includes(user._id);
+  
+  // Generate smaller placeholder URL (could be replaced with actual thumbnail URLs if your backend supports it)
+  const getPlaceholderUrl = (url) => {
+    return url; // In a real implementation, this might be a thumbnail version
+  };
 
   if (isLoading) {
     return (
@@ -267,21 +318,43 @@ const PostDetail = () => {
             </div>
           </div>
 
-          {/* Post images */}
+          {/* Post images - Optimized */}
           {selectedPost.photos && selectedPost.photos.length > 0 && (
-            <div className="relative">
-              {/* Background effect for visual appeal */}
+            <div className="relative" ref={imageContainerRef}>
+              {/* Background effect */}
               <div className="absolute inset-0 bg-black/5 backdrop-blur-sm"></div>
 
-              {/* Main image container with enhanced styling */}
+              {/* Main image container with loading states */}
               <div className="relative h-[450px] bg-gray-900 flex items-center justify-center overflow-hidden">
+                {/* Low-res placeholder image (blur-up effect) */}
+                {imageLoading && (
+                  <div className="absolute inset-0 flex items-center justify-center bg-gray-800">
+                    <div className="w-full h-full">
+                      <img
+                        src={getPlaceholderUrl(selectedPost.photos[currentImageIndex])}
+                        alt="Loading preview"
+                        className="w-full h-full object-contain opacity-30 blur-sm"
+                      />
+                    </div>
+                    <div className="absolute inset-0 flex flex-col items-center justify-center text-white">
+                      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white"></div>
+                      <p className="mt-2 text-sm">Loading image...</p>
+                    </div>
+                  </div>
+                )}
+
+                {/* Main image with onLoad handler */}
                 <img
                   src={selectedPost.photos[currentImageIndex]}
                   alt={selectedPost.title}
-                  className={`w-full h-full object-${imageViewMode} transition-all duration-300`}
+                  className={`w-full h-full object-${imageViewMode} transition-all duration-300 ${
+                    imageLoading ? 'opacity-0' : 'opacity-100'
+                  }`}
+                  loading="lazy"
+                  onLoad={handleImageLoad}
                 />
 
-                {/* Toggle view mode button */}
+                {/* View mode toggle button */}
                 <button
                   onClick={() =>
                     setImageViewMode(
@@ -328,10 +401,9 @@ const PostDetail = () => {
                   )}
                 </button>
 
-                {/* Full screen button (optional) */}
+                {/* Full screen button */}
                 <button
                   onClick={() => {
-                    // You can implement a full-screen mode here
                     const img = document.createElement("img");
                     img.src = selectedPost.photos[currentImageIndex];
                     img.style.objectFit = "contain";
@@ -371,9 +443,39 @@ const PostDetail = () => {
                 </div>
               </div>
 
+              {/* Image thumbnails for faster navigation */}
+              {selectedPost.photos.length > 1 && (
+                <div className="bg-gray-800 p-2 flex justify-center gap-2 overflow-x-auto">
+                  {selectedPost.photos.map((photo, index) => (
+                    <button
+                      key={index}
+                      onClick={() => setCurrentImageIndex(index)}
+                      className={`w-16 h-16 flex-shrink-0 transition-all ${
+                        currentImageIndex === index ? "ring-2 ring-blue-400" : ""
+                      }`}
+                    >
+                      <div className="w-full h-full relative">
+                        <div className={`absolute inset-0 flex items-center justify-center 
+                          ${!preloadedImages[index] ? "bg-gray-700" : ""}`}>
+                          {!preloadedImages[index] && <FiImage className="text-gray-400" />}
+                        </div>
+                        <img
+                          src={photo}
+                          alt={`Thumbnail ${index + 1}`}
+                          className={`w-full h-full object-cover ${
+                            !preloadedImages[index] ? "opacity-0" : "opacity-100"
+                          }`}
+                          loading="lazy"
+                        />
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              )}
+
               {selectedPost.photos.length > 1 && (
                 <>
-                  {/* Image navigation arrows with enhanced styling */}
+                  {/* Navigation buttons */}
                   <button
                     onClick={prevImage}
                     className="absolute left-4 top-1/2 -translate-y-1/2 p-3 rounded-full bg-black/50 text-white hover:bg-black/70 transition-colors"
@@ -387,7 +489,7 @@ const PostDetail = () => {
                     <FiArrowLeft className="rotate-180" />
                   </button>
 
-                  {/* Enhanced image pagination dots */}
+                  {/* Pagination dots */}
                   <div className="absolute bottom-4 left-0 right-0 flex justify-center gap-2">
                     {selectedPost.photos.map((_, index) => (
                       <button
@@ -472,13 +574,12 @@ const PostDetail = () => {
           </div>
         </div>
 
-        {/* Comments section */}
+        {/* Comments section - Unchanged */}
         <div className="bg-white rounded-xl shadow-md p-6 md:p-8 mb-8">
           <h3 className="text-xl font-bold text-gray-800 mb-6">
             Comments ({selectedPost.comments?.length || 0})
           </h3>
 
-          {/* Comment form */}
           <form onSubmit={handleCommentSubmit} className="mb-8">
             <div className="flex gap-3">
               <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0">
@@ -493,7 +594,7 @@ const PostDetail = () => {
                   onChange={(e) => setComment(e.target.value)}
                   disabled={!user}
                   className="w-full px-4 py-3 pr-10 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                  maxLength={500} // Add this to limit length
+                  maxLength={500}
                 />
                 <button
                   type="submit"
@@ -511,7 +612,6 @@ const PostDetail = () => {
             )}
           </form>
 
-          {/* Comments list */}
           {selectedPost.comments && selectedPost.comments.length > 0 ? (
             <div className="space-y-6">
               {selectedPost.comments.map((comment) => (
