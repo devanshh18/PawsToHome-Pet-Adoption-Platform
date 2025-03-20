@@ -16,6 +16,7 @@ import {
   FaLongArrowAltRight,
   FaHeart,
   FaInfoCircle,
+  FaSearch,
 } from "react-icons/fa";
 
 export default function AdoptionApplicationPage() {
@@ -30,6 +31,7 @@ export default function AdoptionApplicationPage() {
   const { isLoading: formLoading } = useSelector((state) => state.adoption);
   const user = useSelector((state) => state.auth.user);
   const [activeSection, setActiveSection] = useState(0);
+  const [isSubmitted, setIsSubmitted] = useState(false);
 
   const {
     register,
@@ -114,7 +116,7 @@ export default function AdoptionApplicationPage() {
 
       await dispatch(submitApplication(applicationData)).unwrap();
       toast.success("Application submitted successfully!");
-      navigate(`/pet/${petId}`);
+      setIsSubmitted(true);
     } catch (error) {
       toast.error(error || "Failed to submit application");
     }
@@ -342,33 +344,70 @@ export default function AdoptionApplicationPage() {
 
               <form onSubmit={handleSubmit(onSubmit)}>
                 <div className="p-6">
-                  {/* Living Arrangement Section */}
-                  {activeSection === 0 && (
-                    <div className="space-y-6">
-                      <div className="border-b pb-4">
-                        <h2 className="text-xl font-bold text-blue-700 flex items-center gap-2">
-                          <FaHome className="text-blue-600" />
-                          Living Arrangement
-                        </h2>
-                        <p className="text-gray-600 mt-1">
-                          Tell us about where you live
-                        </p>
+                  {isSubmitted ? (
+                    <div className="space-y-6 text-center py-8">
+                      <div className="flex justify-center">
+                        <div className="bg-green-100 rounded-full p-6">
+                          <FaCheckCircle className="h-16 w-16 text-green-500" />
+                        </div>
                       </div>
+                      <h2 className="text-2xl font-bold text-gray-800">
+                        Application Submitted!
+                      </h2>
+                      <p className="text-gray-600 max-w-md mx-auto">
+                        Thank you for applying to adopt {selectedPet.name}. Your
+                        application has been received and is being reviewed by{" "}
+                        {selectedPet.shelterId.shelterName}. They will contact
+                        you soon regarding the next steps in the adoption
+                        process.
+                      </p>
+                      <div className="flex flex-col md:flex-row gap-4 justify-center mt-8">
+                        <button
+                          type="button"
+                          onClick={() => navigate("/my-account?tab=adoptions")}
+                          className="px-6 py-3 bg-blue-600 rounded-xl hover:bg-blue-700 transition-colors text-white font-medium flex items-center justify-center gap-2"
+                        >
+                          <FaPaw /> View My Applications
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => navigate("/pets")}
+                          className="px-6 py-3 border border-gray-300 rounded-xl hover:bg-gray-100 transition-colors text-gray-700 font-medium flex items-center justify-center gap-2"
+                        >
+                          <FaSearch /> Browse More Pets
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <>
+                      {/* Living Arrangement Section */}
+                      {activeSection === 0 && (
+                        <div className="space-y-6">
+                          <div className="border-b pb-4">
+                            <h2 className="text-xl font-bold text-blue-700 flex items-center gap-2">
+                              <FaHome className="text-blue-600" />
+                              Living Arrangement
+                            </h2>
+                            <p className="text-gray-600 mt-1">
+                              Tell us about where you live
+                            </p>
+                          </div>
 
-                      <div className="space-y-6">
-                        <div>
-                          <label className="block text-gray-700 font-medium mb-2">
-                            Home Type <span className="text-red-500">*</span>
-                          </label>
-                          <div className="grid grid-cols-3 gap-4">
-                            {[
-                              { value: "house", label: "House" },
-                              { value: "apartment", label: "Apartment" },
-                              { value: "condo", label: "Condo" },
-                            ].map((option) => (
-                              <label
-                                key={option.value}
-                                className={`
+                          <div className="space-y-6">
+                            <div>
+                              <label className="block text-gray-700 font-medium mb-2">
+                                Home Type{" "}
+                                <span className="text-red-500">*</span>
+                              </label>
+                              <div className="grid grid-cols-3 gap-4">
+                                {[
+                                  { value: "house", label: "House" },
+                                  { value: "apartment", label: "Apartment" },
+                                  { value: "condo", label: "Condo" },
+                                ].map((option) => (
+                                  <label
+                                    key={option.value}
+                                    className={`
                                   border rounded-xl p-4 flex flex-col items-center cursor-pointer transition
                                   ${
                                     formValues.homeType === option.value
@@ -376,41 +415,41 @@ export default function AdoptionApplicationPage() {
                                       : "border-gray-200 hover:border-blue-300"
                                   }
                                 `}
-                              >
-                                <input
-                                  type="radio"
-                                  value={option.value}
-                                  {...register("homeType", {
-                                    required: "Home type is required",
-                                  })}
-                                  className="sr-only"
-                                />
-                                <span className="text-gray-800 font-medium">
-                                  {option.label}
-                                </span>
-                              </label>
-                            ))}
-                          </div>
-                          {errors.homeType && (
-                            <p className="mt-2 text-red-600 text-sm">
-                              {errors.homeType.message}
-                            </p>
-                          )}
-                        </div>
+                                  >
+                                    <input
+                                      type="radio"
+                                      value={option.value}
+                                      {...register("homeType", {
+                                        required: "Home type is required",
+                                      })}
+                                      className="sr-only"
+                                    />
+                                    <span className="text-gray-800 font-medium">
+                                      {option.label}
+                                    </span>
+                                  </label>
+                                ))}
+                              </div>
+                              {errors.homeType && (
+                                <p className="mt-2 text-red-600 text-sm">
+                                  {errors.homeType.message}
+                                </p>
+                              )}
+                            </div>
 
-                        <div>
-                          <label className="block text-gray-700 font-medium mb-2">
-                            Do you have a yard?{" "}
-                            <span className="text-red-500">*</span>
-                          </label>
-                          <div className="grid grid-cols-2 gap-4">
-                            {[
-                              { value: "true", label: "Yes" },
-                              { value: "false", label: "No" },
-                            ].map((option) => (
-                              <label
-                                key={option.value}
-                                className={`
+                            <div>
+                              <label className="block text-gray-700 font-medium mb-2">
+                                Do you have a yard?{" "}
+                                <span className="text-red-500">*</span>
+                              </label>
+                              <div className="grid grid-cols-2 gap-4">
+                                {[
+                                  { value: "true", label: "Yes" },
+                                  { value: "false", label: "No" },
+                                ].map((option) => (
+                                  <label
+                                    key={option.value}
+                                    className={`
                                   border rounded-xl p-4 flex flex-col items-center cursor-pointer transition
                                   ${
                                     formValues.hasYard === option.value
@@ -418,45 +457,45 @@ export default function AdoptionApplicationPage() {
                                       : "border-gray-200 hover:border-blue-300"
                                   }
                                 `}
-                              >
-                                <input
-                                  type="radio"
-                                  value={option.value}
-                                  {...register("hasYard", {
-                                    required: "Please select yes or no",
-                                  })}
-                                  className="sr-only"
-                                />
-                                <span className="text-gray-800 font-medium">
-                                  {option.label}
-                                </span>
-                              </label>
-                            ))}
-                          </div>
-                          {errors.hasYard && (
-                            <p className="mt-2 text-red-600 text-sm">
-                              {errors.hasYard.message}
-                            </p>
-                          )}
-                        </div>
+                                  >
+                                    <input
+                                      type="radio"
+                                      value={option.value}
+                                      {...register("hasYard", {
+                                        required: "Please select yes or no",
+                                      })}
+                                      className="sr-only"
+                                    />
+                                    <span className="text-gray-800 font-medium">
+                                      {option.label}
+                                    </span>
+                                  </label>
+                                ))}
+                              </div>
+                              {errors.hasYard && (
+                                <p className="mt-2 text-red-600 text-sm">
+                                  {errors.hasYard.message}
+                                </p>
+                              )}
+                            </div>
 
-                        <div>
-                          <label className="block text-gray-700 font-medium mb-2">
-                            Housing Status{" "}
-                            <span className="text-red-500">*</span>
-                          </label>
-                          <div className="grid grid-cols-3 gap-4">
-                            {[
-                              { value: "own", label: "Own" },
-                              { value: "rent", label: "Rent" },
-                              {
-                                value: "live_with_family",
-                                label: "Live with Family",
-                              },
-                            ].map((option) => (
-                              <label
-                                key={option.value}
-                                className={`
+                            <div>
+                              <label className="block text-gray-700 font-medium mb-2">
+                                Housing Status{" "}
+                                <span className="text-red-500">*</span>
+                              </label>
+                              <div className="grid grid-cols-3 gap-4">
+                                {[
+                                  { value: "own", label: "Own" },
+                                  { value: "rent", label: "Rent" },
+                                  {
+                                    value: "live_with_family",
+                                    label: "Live with Family",
+                                  },
+                                ].map((option) => (
+                                  <label
+                                    key={option.value}
+                                    className={`
                                   border rounded-xl p-4 flex flex-col items-center cursor-pointer transition
                                   ${
                                     formValues.ownership === option.value
@@ -464,84 +503,84 @@ export default function AdoptionApplicationPage() {
                                       : "border-gray-200 hover:border-blue-300"
                                   }
                                 `}
-                              >
-                                <input
-                                  type="radio"
-                                  value={option.value}
-                                  {...register("ownership", {
-                                    required: "Housing status is required",
-                                  })}
-                                  className="sr-only"
-                                />
-                                <span className="text-gray-800 font-medium">
-                                  {option.label}
-                                </span>
+                                  >
+                                    <input
+                                      type="radio"
+                                      value={option.value}
+                                      {...register("ownership", {
+                                        required: "Housing status is required",
+                                      })}
+                                      className="sr-only"
+                                    />
+                                    <span className="text-gray-800 font-medium">
+                                      {option.label}
+                                    </span>
+                                  </label>
+                                ))}
+                              </div>
+                              {errors.ownership && (
+                                <p className="mt-2 text-red-600 text-sm">
+                                  {errors.ownership.message}
+                                </p>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Household Information Section */}
+                      {activeSection === 1 && (
+                        <div className="space-y-6">
+                          <div className="border-b pb-4">
+                            <h2 className="text-xl font-bold text-blue-700 flex items-center gap-2">
+                              <FaUsers className="text-blue-600" />
+                              Household Information
+                            </h2>
+                            <p className="text-gray-600 mt-1">
+                              Tell us about the people in your home
+                            </p>
+                          </div>
+
+                          <div className="space-y-6">
+                            <div>
+                              <label className="block text-gray-700 font-medium mb-2">
+                                Number of Adults{" "}
+                                <span className="text-red-500">*</span>
                               </label>
-                            ))}
-                          </div>
-                          {errors.ownership && (
-                            <p className="mt-2 text-red-600 text-sm">
-                              {errors.ownership.message}
-                            </p>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                  )}
+                              <div className="w-full md:w-1/3">
+                                <input
+                                  type="number"
+                                  min="1"
+                                  {...register("numberOfAdults", {
+                                    required: "Number of adults is required",
+                                    min: {
+                                      value: 1,
+                                      message: "Must be at least 1",
+                                    },
+                                  })}
+                                  className="w-full p-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-400"
+                                />
+                              </div>
+                              {errors.numberOfAdults && (
+                                <p className="mt-2 text-red-600 text-sm">
+                                  {errors.numberOfAdults.message}
+                                </p>
+                              )}
+                            </div>
 
-                  {/* Household Information Section */}
-                  {activeSection === 1 && (
-                    <div className="space-y-6">
-                      <div className="border-b pb-4">
-                        <h2 className="text-xl font-bold text-blue-700 flex items-center gap-2">
-                          <FaUsers className="text-blue-600" />
-                          Household Information
-                        </h2>
-                        <p className="text-gray-600 mt-1">
-                          Tell us about the people in your home
-                        </p>
-                      </div>
-
-                      <div className="space-y-6">
-                        <div>
-                          <label className="block text-gray-700 font-medium mb-2">
-                            Number of Adults{" "}
-                            <span className="text-red-500">*</span>
-                          </label>
-                          <div className="w-full md:w-1/3">
-                            <input
-                              type="number"
-                              min="1"
-                              {...register("numberOfAdults", {
-                                required: "Number of adults is required",
-                                min: {
-                                  value: 1,
-                                  message: "Must be at least 1",
-                                },
-                              })}
-                              className="w-full p-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-400"
-                            />
-                          </div>
-                          {errors.numberOfAdults && (
-                            <p className="mt-2 text-red-600 text-sm">
-                              {errors.numberOfAdults.message}
-                            </p>
-                          )}
-                        </div>
-
-                        <div>
-                          <label className="block text-gray-700 font-medium mb-2">
-                            Do you have children?{" "}
-                            <span className="text-red-500">*</span>
-                          </label>
-                          <div className="grid grid-cols-2 gap-4 md:w-2/3">
-                            {[
-                              { value: "true", label: "Yes" },
-                              { value: "false", label: "No" },
-                            ].map((option) => (
-                              <label
-                                key={option.value}
-                                className={`
+                            <div>
+                              <label className="block text-gray-700 font-medium mb-2">
+                                Do you have children?{" "}
+                                <span className="text-red-500">*</span>
+                              </label>
+                              <div className="grid grid-cols-2 gap-4 md:w-2/3">
+                                {[
+                                  { value: "true", label: "Yes" },
+                                  { value: "false", label: "No" },
+                                ].map((option) => (
+                                  <label
+                                    key={option.value}
+                                    className={`
                                   border rounded-xl p-4 flex flex-col items-center cursor-pointer transition
                                   ${
                                     formValues.hasChildren === option.value
@@ -549,58 +588,58 @@ export default function AdoptionApplicationPage() {
                                       : "border-gray-200 hover:border-blue-300"
                                   }
                                 `}
-                              >
-                                <input
-                                  type="radio"
-                                  value={option.value}
-                                  {...register("hasChildren", {
-                                    required: "Please select yes or no",
-                                  })}
-                                  className="sr-only"
-                                />
-                                <span className="text-gray-800 font-medium">
-                                  {option.label}
-                                </span>
-                              </label>
-                            ))}
+                                  >
+                                    <input
+                                      type="radio"
+                                      value={option.value}
+                                      {...register("hasChildren", {
+                                        required: "Please select yes or no",
+                                      })}
+                                      className="sr-only"
+                                    />
+                                    <span className="text-gray-800 font-medium">
+                                      {option.label}
+                                    </span>
+                                  </label>
+                                ))}
+                              </div>
+                              {errors.hasChildren && (
+                                <p className="mt-2 text-red-600 text-sm">
+                                  {errors.hasChildren.message}
+                                </p>
+                              )}
+                            </div>
                           </div>
-                          {errors.hasChildren && (
-                            <p className="mt-2 text-red-600 text-sm">
-                              {errors.hasChildren.message}
-                            </p>
-                          )}
                         </div>
-                      </div>
-                    </div>
-                  )}
+                      )}
 
-                  {/* Pet Experience Section */}
-                  {activeSection === 2 && (
-                    <div className="space-y-6">
-                      <div className="border-b pb-4">
-                        <h2 className="text-xl font-bold text-blue-700 flex items-center gap-2">
-                          <FaPaw className="text-blue-600" />
-                          Pet Experience
-                        </h2>
-                        <p className="text-gray-600 mt-1">
-                          Tell us about your experience with pets
-                        </p>
-                      </div>
+                      {/* Pet Experience Section */}
+                      {activeSection === 2 && (
+                        <div className="space-y-6">
+                          <div className="border-b pb-4">
+                            <h2 className="text-xl font-bold text-blue-700 flex items-center gap-2">
+                              <FaPaw className="text-blue-600" />
+                              Pet Experience
+                            </h2>
+                            <p className="text-gray-600 mt-1">
+                              Tell us about your experience with pets
+                            </p>
+                          </div>
 
-                      <div className="space-y-6">
-                        <div>
-                          <label className="block text-gray-700 font-medium mb-2">
-                            Do you have other pets?{" "}
-                            <span className="text-red-500">*</span>
-                          </label>
-                          <div className="grid grid-cols-2 gap-4 md:w-2/3">
-                            {[
-                              { value: "true", label: "Yes" },
-                              { value: "false", label: "No" },
-                            ].map((option) => (
-                              <label
-                                key={option.value}
-                                className={`
+                          <div className="space-y-6">
+                            <div>
+                              <label className="block text-gray-700 font-medium mb-2">
+                                Do you have other pets?{" "}
+                                <span className="text-red-500">*</span>
+                              </label>
+                              <div className="grid grid-cols-2 gap-4 md:w-2/3">
+                                {[
+                                  { value: "true", label: "Yes" },
+                                  { value: "false", label: "No" },
+                                ].map((option) => (
+                                  <label
+                                    key={option.value}
+                                    className={`
                                   border rounded-xl p-4 flex flex-col items-center cursor-pointer transition
                                   ${
                                     formValues.hasOtherPets === option.value
@@ -608,184 +647,189 @@ export default function AdoptionApplicationPage() {
                                       : "border-gray-200 hover:border-blue-300"
                                   }
                                 `}
-                              >
-                                <input
-                                  type="radio"
-                                  value={option.value}
-                                  {...register("hasOtherPets", {
-                                    required: "Please select yes or no",
-                                  })}
-                                  className="sr-only"
-                                />
-                                <span className="text-gray-800 font-medium">
-                                  {option.label}
-                                </span>
-                              </label>
-                            ))}
-                          </div>
-                          {errors.hasOtherPets && (
-                            <p className="mt-2 text-red-600 text-sm">
-                              {errors.hasOtherPets.message}
-                            </p>
-                          )}
-                        </div>
-
-                        <div>
-                          <label className="block text-gray-700 font-medium mb-2">
-                            Previous Pet Experience
-                          </label>
-                          <textarea
-                            {...register("previousExperience")}
-                            rows={4}
-                            disabled={formValues.hasOtherPets === "false"}
-                            className={`w-full p-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-400 
-      ${
-        formValues.hasOtherPets === "false" ? "bg-gray-100 text-gray-500" : ""
-      }`}
-                            placeholder={
-                              formValues.hasOtherPets === "false"
-                                ? "Select 'Yes' above to share your pet experience"
-                                : "Tell us about your past experience with pets"
-                            }
-                          />
-                          <p className="mt-1 text-gray-500 text-sm">
-                            {formValues.hasOtherPets === "false"
-                              ? "This field is disabled because you selected 'No' above"
-                              : "This field is optional"}
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Adoption Details Section */}
-                  {activeSection === 3 && (
-                    <div className="space-y-6">
-                      <div className="border-b pb-4">
-                        <h2 className="text-xl font-bold text-blue-700 flex items-center gap-2">
-                          <FaClipboardList className="text-blue-600" />
-                          Adoption Details
-                        </h2>
-                        <p className="text-gray-600 mt-1">
-                          Tell us why you want to adopt {selectedPet.name}
-                        </p>
-                      </div>
-
-                      <div className="space-y-6">
-                        <div>
-                          <label className="block text-gray-700 font-medium mb-2">
-                            Why do you want to adopt {selectedPet.name}?{" "}
-                            <span className="text-red-500">*</span>
-                          </label>
-                          <textarea
-                            {...register("reason", {
-                              required:
-                                "Please tell us why you want to adopt this pet",
-                            })}
-                            rows={4}
-                            className="w-full p-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-400"
-                            placeholder="Share your reasons for wanting to adopt this pet"
-                          />
-                          {errors.reason && (
-                            <p className="mt-2 text-red-600 text-sm">
-                              {errors.reason.message}
-                            </p>
-                          )}
-                        </div>
-
-                        <div>
-                          <label className="block text-gray-700 font-medium mb-2">
-                            What is your daily schedule like?{" "}
-                            <span className="text-red-500">*</span>
-                          </label>
-                          <textarea
-                            {...register("schedule", {
-                              required: "Please describe your daily schedule",
-                            })}
-                            rows={3}
-                            className="w-full p-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-400"
-                            placeholder="Describe your typical daily schedule"
-                          />
-                          {errors.schedule && (
-                            <p className="mt-2 text-red-600 text-sm">
-                              {errors.schedule.message}
-                            </p>
-                          )}
-                        </div>
-
-                        <div className="pt-4">
-                          <div className="flex items-start">
-                            <div className="flex items-center h-5">
-                              <input
-                                type="checkbox"
-                                {...register("agreementAccepted", {
-                                  required:
-                                    "You must accept the adoption agreement",
-                                })}
-                                className="h-5 w-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                              />
-                            </div>
-                            <div className="ml-3">
-                              <label className="text-gray-700">
-                                I agree to provide a loving home and proper care
-                                for {selectedPet.name}
-                                <span className="text-red-500"> *</span>
-                              </label>
-                              {errors.agreementAccepted && (
-                                <p className="mt-1 text-red-600 text-sm">
-                                  {errors.agreementAccepted.message}
+                                  >
+                                    <input
+                                      type="radio"
+                                      value={option.value}
+                                      {...register("hasOtherPets", {
+                                        required: "Please select yes or no",
+                                      })}
+                                      className="sr-only"
+                                    />
+                                    <span className="text-gray-800 font-medium">
+                                      {option.label}
+                                    </span>
+                                  </label>
+                                ))}
+                              </div>
+                              {errors.hasOtherPets && (
+                                <p className="mt-2 text-red-600 text-sm">
+                                  {errors.hasOtherPets.message}
                                 </p>
                               )}
                             </div>
+
+                            <div>
+                              <label className="block text-gray-700 font-medium mb-2">
+                                Previous Pet Experience
+                              </label>
+                              <textarea
+                                {...register("previousExperience")}
+                                rows={4}
+                                disabled={formValues.hasOtherPets === "false"}
+                                className={`w-full p-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-400 
+      ${
+        formValues.hasOtherPets === "false" ? "bg-gray-100 text-gray-500" : ""
+      }`}
+                                placeholder={
+                                  formValues.hasOtherPets === "false"
+                                    ? "Select 'Yes' above to share your pet experience"
+                                    : "Tell us about your past experience with pets"
+                                }
+                              />
+                              <p className="mt-1 text-gray-500 text-sm">
+                                {formValues.hasOtherPets === "false"
+                                  ? "This field is disabled because you selected 'No' above"
+                                  : "This field is optional"}
+                              </p>
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    </div>
+                      )}
+
+                      {/* Adoption Details Section */}
+                      {activeSection === 3 && (
+                        <div className="space-y-6">
+                          <div className="border-b pb-4">
+                            <h2 className="text-xl font-bold text-blue-700 flex items-center gap-2">
+                              <FaClipboardList className="text-blue-600" />
+                              Adoption Details
+                            </h2>
+                            <p className="text-gray-600 mt-1">
+                              Tell us why you want to adopt {selectedPet.name}
+                            </p>
+                          </div>
+
+                          <div className="space-y-6">
+                            <div>
+                              <label className="block text-gray-700 font-medium mb-2">
+                                Why do you want to adopt {selectedPet.name}?{" "}
+                                <span className="text-red-500">*</span>
+                              </label>
+                              <textarea
+                                {...register("reason", {
+                                  required:
+                                    "Please tell us why you want to adopt this pet",
+                                })}
+                                rows={4}
+                                className="w-full p-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-400"
+                                placeholder="Share your reasons for wanting to adopt this pet"
+                              />
+                              {errors.reason && (
+                                <p className="mt-2 text-red-600 text-sm">
+                                  {errors.reason.message}
+                                </p>
+                              )}
+                            </div>
+
+                            <div>
+                              <label className="block text-gray-700 font-medium mb-2">
+                                What is your daily schedule like?{" "}
+                                <span className="text-red-500">*</span>
+                              </label>
+                              <textarea
+                                {...register("schedule", {
+                                  required:
+                                    "Please describe your daily schedule",
+                                })}
+                                rows={3}
+                                className="w-full p-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-400"
+                                placeholder="Describe your typical daily schedule"
+                              />
+                              {errors.schedule && (
+                                <p className="mt-2 text-red-600 text-sm">
+                                  {errors.schedule.message}
+                                </p>
+                              )}
+                            </div>
+
+                            <div className="pt-4">
+                              <div className="flex items-start">
+                                <div className="flex items-center h-5">
+                                  <input
+                                    type="checkbox"
+                                    {...register("agreementAccepted", {
+                                      required:
+                                        "You must accept the adoption agreement",
+                                    })}
+                                    className="h-5 w-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                                  />
+                                </div>
+                                <div className="ml-3">
+                                  <label className="text-gray-700">
+                                    I agree to provide a loving home and proper
+                                    care for {selectedPet.name}
+                                    <span className="text-red-500"> *</span>
+                                  </label>
+                                  {errors.agreementAccepted && (
+                                    <p className="mt-1 text-red-600 text-sm">
+                                      {errors.agreementAccepted.message}
+                                    </p>
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </>
                   )}
                 </div>
 
                 {/* Form Navigation and Submit */}
-                <div className="p-6 bg-gray-50 flex flex-col md:flex-row justify-between items-center">
-                  <div>
-                    {activeSection > 0 && (
-                      <button
-                        type="button"
-                        onClick={handleBack}
-                        className="px-6 py-3 border border-gray-300 rounded-xl hover:bg-gray-100 transition-colors text-gray-700 font-medium flex items-center gap-2"
-                      >
-                        <FaArrowLeft size={14} /> Back
-                      </button>
-                    )}
-                  </div>
-
-                  <div className="mt-4 md:mt-0 w-full md:w-auto">
-                    {activeSection < 3 ? (
-                      <button
-                        type="button"
-                        onClick={handleNext}
-                        className="w-full md:w-auto px-8 py-3 bg-blue-600 rounded-xl hover:bg-blue-700 transition-colors text-white font-medium flex items-center gap-2 justify-center"
-                      >
-                        Continue <FaLongArrowAltRight />
-                      </button>
-                    ) : (
-                      <div className="flex flex-col md:flex-row gap-4">
+                {!isSubmitted && (
+                  <div className="p-6 bg-gray-50 flex flex-col md:flex-row justify-between items-center">
+                    <div>
+                      {activeSection > 0 && (
                         <button
                           type="button"
-                          onClick={() => navigate(`/pet/${petId}`)}
-                          className="px-6 py-3 border border-gray-300 rounded-xl hover:bg-gray-100 transition-colors text-gray-700 font-medium"
+                          onClick={handleBack}
+                          className="px-6 py-3 border border-gray-300 rounded-xl hover:bg-gray-100 transition-colors text-gray-700 font-medium flex items-center gap-2"
                         >
-                          Cancel
+                          <FaArrowLeft size={14} /> Back
                         </button>
+                      )}
+                    </div>
+
+                    <div className="mt-4 md:mt-0 w-full md:w-auto">
+                      {activeSection < 3 ? (
                         <button
-                          type="submit"
-                          className="px-8 py-3 bg-blue-600 rounded-xl hover:bg-blue-700 transition-colors text-white font-medium flex items-center gap-2 justify-center"
+                          type="button"
+                          onClick={handleNext}
+                          className="w-full md:w-auto px-8 py-3 bg-blue-600 rounded-xl hover:bg-blue-700 transition-colors text-white font-medium flex items-center gap-2 justify-center"
                         >
-                          <FaCheckCircle /> Submit Application
+                          Continue <FaLongArrowAltRight />
                         </button>
-                      </div>
-                    )}
+                      ) : (
+                        <div className="flex flex-col md:flex-row gap-4">
+                          <button
+                            type="button"
+                            onClick={() => navigate(`/pet/${petId}`)}
+                            className="px-6 py-3 border border-gray-300 rounded-xl hover:bg-gray-100 transition-colors text-gray-700 font-medium"
+                          >
+                            Cancel
+                          </button>
+                          <button
+                            type="submit"
+                            className="px-8 py-3 bg-blue-600 rounded-xl hover:bg-blue-700 transition-colors text-white font-medium flex items-center gap-2 justify-center"
+                          >
+                            <FaCheckCircle /> Submit Application
+                          </button>
+                        </div>
+                      )}
+                    </div>
                   </div>
-                </div>
+                )}
               </form>
             </div>
           </div>
