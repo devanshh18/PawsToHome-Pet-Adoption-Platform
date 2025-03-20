@@ -1,7 +1,8 @@
 import axios from "axios";
+import API_BASE_URL from "../../config/api.js";
 
 const API = axios.create({
-  baseURL: "http://localhost:5000/api/pets",
+ baseURL: `${API_BASE_URL}/pets`,
   withCredentials: true,
 });
 
