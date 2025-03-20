@@ -22,8 +22,20 @@ const app = express();
 // Configure CORS with credentials
 app.use(
   cors({
-    origin: process.env.FRONTEND_URL || "http://localhost:5173",
-    credentials: true,
+    origin: function(origin, callback) {
+      const allowedOrigins = [
+        'https://pawstohome.vercel.app',
+        'https://pawstohome-5r0a1iol1-devanshs-projects-f18d62b4.vercel.app',
+        'http://localhost:5173'
+      ];
+      // Allow requests with no origin (like mobile apps, curl, etc)
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
+    credentials: true
   })
 );
 
@@ -78,3 +90,5 @@ const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
+
+export default app;
