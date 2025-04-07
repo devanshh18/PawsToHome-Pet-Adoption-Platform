@@ -7,6 +7,15 @@ const API = axios.create({
   withCredentials: true,
 });
 
+// Add error interceptor
+API.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    console.error("Post API error:", error.message);
+    return Promise.reject(error);
+  }
+);
+
 // Get all posts with filters
 const getAllPosts = async (params = {}) => {
   try {

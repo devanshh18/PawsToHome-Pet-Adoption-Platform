@@ -7,6 +7,15 @@ const API = axios.create({
   withCredentials: true,
 });
 
+// Add error interceptor
+API.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    console.error("Adoption API error:", error.message);
+    return Promise.reject(error);
+  }
+);
+
 export const submitAdoptionApplication = async (applicationData) => {
   const response = await API.post("/submit", applicationData);
   return response.data;

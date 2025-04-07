@@ -7,6 +7,15 @@ const API = axios.create({
   withCredentials: true,
 });
 
+// Add error interceptor
+API.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    console.error("Shelter API error:", error.message);
+    return Promise.reject(error);
+  }
+);
+
 // Get all shelters with optional filters
 export const getAllShelters = async (filters = {}) => {
   try {

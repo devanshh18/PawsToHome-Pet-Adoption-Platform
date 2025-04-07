@@ -7,6 +7,15 @@ export const API = axios.create({
   withCredentials: true,
 });
 
+// Add error interceptor
+API.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    console.error("Auth API error:", error.message);
+    return Promise.reject(error);
+  }
+);
+
 export const login = async (data) => {
   const response = await API.post("/login", data);
   return response.data;

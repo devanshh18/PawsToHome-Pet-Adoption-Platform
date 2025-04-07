@@ -7,6 +7,15 @@ const API = axios.create({
   withCredentials: true,
 });
 
+// Add error interceptor
+API.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    console.error("Pet API error:", error.message);
+    return Promise.reject(error);
+  }
+);
+
 export const addPet = async (formData) => {
   try {
     // Debug: Log the FormData contents

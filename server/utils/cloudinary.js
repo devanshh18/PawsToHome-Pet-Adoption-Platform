@@ -17,12 +17,13 @@ export const uploadToCloudinary = async (file) => {
       resource_type: "auto",
     };
 
+    // Handle both development and production environments
     let result;
-    if (process.env.NODE_ENV !== 'production' && file.tempFilePath) {
-      // Path-based upload (development environment)
+    if (file && file.tempFilePath && process.env.NODE_ENV !== 'production') {
+      // Local development with temp files
       result = await cloudinary.uploader.upload(file.tempFilePath, uploadOptions);
-    } else {
-      // Buffer-based upload (production/Vercel environment)
+    } else if (file && file.data) {
+      // Production with buffer data
       result = await new Promise((resolve, reject) => {
         const uploadStream = cloudinary.uploader.upload_stream(
           uploadOptions,
@@ -33,11 +34,14 @@ export const uploadToCloudinary = async (file) => {
         );
         uploadStream.end(file.data);
       });
+    } else {
+      throw new Error('Invalid file upload format');
     }
+    
     return result.secure_url;
   } catch (error) {
     console.error("Cloudinary error:", error);
-    throw createError(500, "Error uploading file to Cloudinary");
+    throw createError(500, "Error uploading file to Cloudinary: " + error.message);
   }
 };
 

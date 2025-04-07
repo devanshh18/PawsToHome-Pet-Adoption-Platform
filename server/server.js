@@ -55,10 +55,23 @@ app.options('*', (req, res) => {
 });
 
 // Connect to MongoDB
-mongoose
-  .connect(process.env.MONGODB_URI)
-  .then(() => logger.info("MongoDB Connected"))
-  .catch((err) => logger.info("MongoDB connection error:", err));
+const connectDB = async () => {
+  try {
+    const conn = await mongoose.connect(process.env.MONGODB_URI);
+    logger.info(`MongoDB Connected: ${conn.connection.host}`);
+    return conn;
+  } catch (error) {
+    logger.error(`MongoDB connection error: ${error.message}`);
+    // In production, don't exit - just log the error
+    if (process.env.NODE_ENV !== 'production') {
+      process.exit(1);
+    }
+    return null;
+  }
+};
+
+// Connect to MongoDB
+connectDB();
 
 // Middleware
 app.use(express.json());
@@ -108,6 +121,21 @@ app.use((err, req, res, next) => {
     success: false,
     message: err.message || "Internal Server Error",
   });
+});
+
+app.use((err, req, res, next) => {
+  console.error('Server error:', err);
+  res.status(err.status || 500).json({
+    error: {
+      message: err.message || 'Internal Server Error',
+      stack: process.env.NODE_ENV === 'production' ? '🥞' : err.stack
+    }
+  });
+});
+
+// 404 handler
+app.use((req, res) => {
+  res.status(404).json({ error: { message: 'Not Found' } });
 });
 
 const PORT = process.env.PORT || 5000;
