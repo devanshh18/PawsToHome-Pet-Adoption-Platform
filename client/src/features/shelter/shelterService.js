@@ -1,20 +1,9 @@
 import axios from "axios";
 
-const baseUrl = import.meta.env.VITE_API_URL ? import.meta.env.VITE_API_URL.replace(/\/$/, '') : '';
-
 const API = axios.create({
-  baseURL: baseUrl ? `${baseUrl}/api/shelters` : "/api/shelters",
+  baseURL: "http://localhost:5000/api/shelters",
   withCredentials: true,
 });
-
-// Add error interceptor
-API.interceptors.response.use(
-  (response) => response,
-  (error) => {
-    console.error("Shelter API error:", error.message);
-    return Promise.reject(error);
-  }
-);
 
 // Get all shelters with optional filters
 export const getAllShelters = async (filters = {}) => {

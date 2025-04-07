@@ -1,20 +1,9 @@
 import axios from "axios";
 
-const baseUrl = import.meta.env.VITE_API_URL ? import.meta.env.VITE_API_URL.replace(/\/$/, '') : '';
-
 const API = axios.create({
-  baseURL: baseUrl ? `${baseUrl}/api/pets` : "/api/pets",
+  baseURL: "http://localhost:5000/api/pets",
   withCredentials: true,
 });
-
-// Add error interceptor
-API.interceptors.response.use(
-  (response) => response,
-  (error) => {
-    console.error("Pet API error:", error.message);
-    return Promise.reject(error);
-  }
-);
 
 export const addPet = async (formData) => {
   try {

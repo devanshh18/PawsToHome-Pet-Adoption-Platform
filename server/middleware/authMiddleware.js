@@ -5,40 +5,28 @@ import User from "../models/User.js";
 // Verify JWT token middleware
 export const authenticate = async (req, res, next) => {
   try {
-    // Get token from cookies or authorization header
-    let token = req.cookies.token;
-    
-    // If no token in cookies, check authorization header
-    if (!token && req.headers.authorization) {
-      token = req.headers.authorization.startsWith('Bearer')
-        ? req.headers.authorization.split(' ')[1]
-        : req.headers.authorization;
+    let token;
+
+    // Get token from cookie
+    if (req.cookies.token) {
+      token = req.cookies.token;
     }
 
     if (!token) {
-      return res.status(401).json({ message: 'Not authenticated, no token' });
+      throw createError(401, "Authentication required");
     }
 
-    try {
-      // Verify token
-      const decoded = jwt.verify(token, process.env.JWT_SECRET);
-      
-      // Find user
-      const user = await User.findById(decoded.id).select('-password');
-      
-      if (!user) {
-        return res.status(401).json({ message: 'User not found' });
-      }
-      
-      req.user = user;
-      next();
-    } catch (error) {
-      console.error('JWT verification error:', error);
-      return res.status(401).json({ message: 'Invalid token' });
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const user = await User.findById(decoded.id).select("-password");
+
+    if (!user) {
+      throw createError(401, "User not found");
     }
+
+    req.user = user;
+    next();
   } catch (error) {
-    console.error('Authentication error:', error);
-    return res.status(500).json({ message: 'Server error during authentication' });
+    next(createError(401, "Invalid token"));
   }
 };
 

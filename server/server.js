@@ -22,78 +22,28 @@ const app = express();
 // Configure CORS with credentials
 app.use(
   cors({
-    origin: function(origin, callback) {
-      const allowedOrigins = [
-        'https://paws-to-home-frontend.vercel.app',
-        process.env.FRONTEND_URL,
-        'http://localhost:5173'
-      ];
-      
-      // For null origin (like Postman or curl requests)
-      if (!origin) return callback(null, true);
-      
-      if (allowedOrigins.includes(origin)) {
-        return callback(null, true);
-      } else {
-        console.log("CORS blocked origin:", origin);
-        // For debugging - allow all origins temporarily
-        return callback(null, true);
-      }
-    },
+    origin: process.env.FRONTEND_URL || "http://localhost:5173",
     credentials: true,
-    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-    preflightContinue: false,
-    optionsSuccessStatus: 204
   })
 );
 
-// Also add this to handle OPTIONS requests explicitly
-app.options('*', cors());
-app.options('*', (req, res) => {
-  res.status(204).end();
-});
-
 // Connect to MongoDB
-const connectDB = async () => {
-  try {
-    const conn = await mongoose.connect(process.env.MONGODB_URI);
-    logger.info(`MongoDB Connected: ${conn.connection.host}`);
-    return conn;
-  } catch (error) {
-    logger.error(`MongoDB connection error: ${error.message}`);
-    // In production, don't exit - just log the error
-    if (process.env.NODE_ENV !== 'production') {
-      process.exit(1);
-    }
-    return null;
-  }
-};
-
-// Connect to MongoDB
-connectDB();
+mongoose
+  .connect(process.env.MONGODB_URI)
+  .then(() => logger.info("MongoDB Connected"))
+  .catch((err) => logger.info("MongoDB connection error:", err));
 
 // Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser()); // Add cookie parser middleware
-if (process.env.NODE_ENV !== "production") {
-  app.use(
-    fileUpload({
-      useTempFiles: true,
-      tempFileDir: "/tmp/",
-      createParentPath: true,
-    })
-  );
-} else {
-  // In production (Vercel), use memory-based uploads
-  app.use(
-    fileUpload({
-      useTempFiles: false,
-      createParentPath: true,
-    })
-  );
-}
+app.use(
+  fileUpload({
+    useTempFiles: true,
+    tempFileDir: "/tmp/",
+    createParentPath: true,
+  })
+);
 app.use(requestLogger);
 
 // Routes
@@ -123,25 +73,8 @@ app.use((err, req, res, next) => {
   });
 });
 
-app.use((err, req, res, next) => {
-  console.error('Server error:', err);
-  res.status(err.status || 500).json({
-    error: {
-      message: err.message || 'Internal Server Error',
-      stack: process.env.NODE_ENV === 'production' ? '🥞' : err.stack
-    }
-  });
-});
-
-// 404 handler
-app.use((req, res) => {
-  res.status(404).json({ error: { message: 'Not Found' } });
-});
-
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
-
-export default app;

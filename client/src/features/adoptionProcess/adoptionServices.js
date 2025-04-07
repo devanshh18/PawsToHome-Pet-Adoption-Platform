@@ -1,20 +1,9 @@
 import axios from "axios";
 
-const baseUrl = import.meta.env.VITE_API_URL ? import.meta.env.VITE_API_URL.replace(/\/$/, '') : '';
-
 const API = axios.create({
-  baseURL: baseUrl ? `${baseUrl}/api/adoptions` : "/api/adoptions",
+  baseURL: "http://localhost:5000/api/adoptions",
   withCredentials: true,
 });
-
-// Add error interceptor
-API.interceptors.response.use(
-  (response) => response,
-  (error) => {
-    console.error("Adoption API error:", error.message);
-    return Promise.reject(error);
-  }
-);
 
 export const submitAdoptionApplication = async (applicationData) => {
   const response = await API.post("/submit", applicationData);
