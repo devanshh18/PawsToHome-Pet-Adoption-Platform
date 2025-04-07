@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const API = axios.create({
-  baseURL: import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL}/api/shelters`.replace(/\/\//g, '/') : "/api/shelters",
+  baseURL: import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL}/api/shelters` : "/api/shelters",
   withCredentials: true,
 });
 
