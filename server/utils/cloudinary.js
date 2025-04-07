@@ -12,10 +12,28 @@ cloudinary.config({
 
 export const uploadToCloudinary = async (file) => {
   try {
-    const result = await cloudinary.uploader.upload(file, {
+    const uploadOptions = {
       folder: "shelter_licenses",
       resource_type: "auto",
-    });
+    };
+
+    let result;
+    if (process.env.NODE_ENV !== 'production' && file.tempFilePath) {
+      // Path-based upload (development environment)
+      result = await cloudinary.uploader.upload(file.tempFilePath, uploadOptions);
+    } else {
+      // Buffer-based upload (production/Vercel environment)
+      result = await new Promise((resolve, reject) => {
+        const uploadStream = cloudinary.uploader.upload_stream(
+          uploadOptions,
+          (error, result) => {
+            if (error) return reject(error);
+            resolve(result);
+          }
+        );
+        uploadStream.end(file.data);
+      });
+    }
     return result.secure_url;
   } catch (error) {
     console.error("Cloudinary error:", error);
@@ -25,14 +43,30 @@ export const uploadToCloudinary = async (file) => {
 
 export const uploadPetToCloudianry = async (file) => {
   try {
-    const result = await cloudinary.uploader.upload(file, {
-      folder: "pets_images",
+    const uploadOptions = {
+      folder: "pets",
       resource_type: "auto",
-    });
+    };
+
+    let result;
+    if (process.env.NODE_ENV !== 'production' && file.tempFilePath) {
+      result = await cloudinary.uploader.upload(file.tempFilePath, uploadOptions);
+    } else {
+      result = await new Promise((resolve, reject) => {
+        const uploadStream = cloudinary.uploader.upload_stream(
+          uploadOptions,
+          (error, result) => {
+            if (error) return reject(error);
+            resolve(result);
+          }
+        );
+        uploadStream.end(file.data);
+      });
+    }
     return result.secure_url;
   } catch (error) {
     console.error("Cloudinary error:", error);
-    throw createError(500, "Error uploading file to Cloudinary");
+    throw createError(500, "Error uploading pet image to Cloudinary");
   }
 };
 

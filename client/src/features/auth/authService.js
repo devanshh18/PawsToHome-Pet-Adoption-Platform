@@ -1,8 +1,8 @@
 import axios from "axios";
 
 export const API = axios.create({
-  baseURL: "http://localhost:5000/api/auth",
-  withCredentials: true, // Enable sending cookies with requests
+  baseURL: import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL}/api/auth` : "/api/auth",
+  withCredentials: true,
 });
 
 export const login = async (data) => {
