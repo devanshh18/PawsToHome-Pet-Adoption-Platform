@@ -1,7 +1,9 @@
 import axios from "axios";
 
+const baseUrl = import.meta.env.VITE_API_URL ? import.meta.env.VITE_API_URL.replace(/\/$/, '') : '';
+
 export const API = axios.create({
-  baseURL: import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL}/api/auth` : "/api/auth",
+  baseURL: baseUrl ? `${baseUrl}/api/auth` : "/api/auth",
   withCredentials: true,
 });
 

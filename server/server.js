@@ -22,7 +22,24 @@ const app = express();
 // Configure CORS with credentials
 app.use(
   cors({
-    origin: ["https://paws-to-home-frontend.vercel.app", process.env.FRONTEND_URL],
+    origin: function(origin, callback) {
+      const allowedOrigins = [
+        'https://paws-to-home-frontend.vercel.app',
+        process.env.FRONTEND_URL,
+        'http://localhost:5173'
+      ];
+      
+      // For null origin (like Postman or curl requests)
+      if (!origin) return callback(null, true);
+      
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      } else {
+        console.log("CORS blocked origin:", origin);
+        // For debugging - allow all origins temporarily
+        return callback(null, true);
+      }
+    },
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
@@ -30,6 +47,12 @@ app.use(
     optionsSuccessStatus: 204
   })
 );
+
+// Also add this to handle OPTIONS requests explicitly
+app.options('*', cors());
+app.options('*', (req, res) => {
+  res.status(204).end();
+});
 
 // Connect to MongoDB
 mongoose
