@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const API = axios.create({
-  baseURL: import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL}/api/adoptions` : "/api/adoptions",
+  baseURL: import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL}/api/adoptions`.replace(/\/\//g, '/') : "/api/adoptions",
   withCredentials: true,
 });
 
