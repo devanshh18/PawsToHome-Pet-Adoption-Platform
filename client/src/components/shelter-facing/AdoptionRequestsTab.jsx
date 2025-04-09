@@ -118,9 +118,9 @@ export default function AdoptionRequestsTab() {
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
       return (
-        app.petId.name.toLowerCase().includes(query) ||
-        app.adopterId.name.toLowerCase().includes(query) ||
-        app.adopterId.email.toLowerCase().includes(query)
+        app.petId?.name?.toLowerCase()?.includes(query) ||
+        app.adopterId?.name?.toLowerCase()?.includes(query) ||
+        app.adopterId?.email?.toLowerCase()?.includes(query)
       );
     }
 
@@ -211,7 +211,7 @@ export default function AdoptionRequestsTab() {
                     <div>
                       <div className="flex items-center gap-3">
                         <h3 className="text-xl font-bold text-gray-800">
-                          {application.petId.name}
+                          {application.petId?.name || "Unknown Pet"}
                         </h3>
                         {getStatusBadge(application.status)}
                       </div>
@@ -281,21 +281,21 @@ export default function AdoptionRequestsTab() {
                     <FiUser className="text-blue-500" />
                     <span className="text-gray-500">Applicant:</span>
                     <span className="font-medium text-gray-800">
-                      {application.adopterId.name}
+                      {application.adopterId?.name || "Unknown Applicant"}
                     </span>
                   </div>
                   <div className="flex items-center gap-2">
                     <FiMail className="text-blue-500" />
                     <span className="text-gray-500">Email:</span>
                     <span className="font-medium text-gray-800">
-                      {application.adopterId.email}
+                      {application.adopterId?.email || "No email provided"}
                     </span>
                   </div>
                   <div className="flex items-center gap-2">
                     <FiPhone className="text-blue-500" />
                     <span className="text-gray-500">Phone:</span>
                     <span className="font-medium text-gray-800">
-                      {application.adopterId.phoneNo}
+                      {application.adopterId?.phoneNo || "No phone provided"}
                     </span>
                   </div>
                 </div>
@@ -314,22 +314,19 @@ export default function AdoptionRequestsTab() {
                       <div className="bg-gray-50 p-3 rounded-lg">
                         <p className="text-xs text-gray-500 mb-1">Home Type</p>
                         <p className="font-medium capitalize text-gray-800">
-                          {application.livingArrangement.homeType}
+                          {application.livingArrangement?.homeType || "Not specified"}
                         </p>
                       </div>
                       <div className="bg-gray-50 p-3 rounded-lg">
                         <p className="text-xs text-gray-500 mb-1">Has Yard</p>
                         <p className="font-medium text-gray-800">
-                          {application.livingArrangement.hasYard ? "Yes" : "No"}
+                          {application.livingArrangement?.hasYard ? "Yes" : "No"}
                         </p>
                       </div>
                       <div className="bg-gray-50 p-3 rounded-lg">
                         <p className="text-xs text-gray-500 mb-1">Ownership</p>
                         <p className="font-medium capitalize text-gray-800">
-                          {application.livingArrangement.ownership.replace(
-                            /_/g,
-                            " "
-                          )}
+                          {application.livingArrangement?.ownership?.replace?.("_", " ") || "Not specified"}
                         </p>
                       </div>
                     </div>
@@ -347,7 +344,7 @@ export default function AdoptionRequestsTab() {
                           Number of Adults
                         </p>
                         <p className="font-medium text-gray-800">
-                          {application.householdInfo.numberOfAdults}
+                          {application.householdInfo?.numberOfAdults || 0}
                         </p>
                       </div>
                       <div className="bg-gray-50 p-3 rounded-lg">
@@ -355,7 +352,7 @@ export default function AdoptionRequestsTab() {
                           Has Children
                         </p>
                         <p className="font-medium text-gray-800">
-                          {application.householdInfo.hasChildren ? "Yes" : "No"}
+                          {application.householdInfo?.hasChildren ? "Yes" : "No"}
                         </p>
                       </div>
                     </div>
@@ -373,18 +370,16 @@ export default function AdoptionRequestsTab() {
                           Has Other Pets
                         </p>
                         <p className="font-medium text-gray-800">
-                          {application.petExperience.hasOtherPets
-                            ? "Yes"
-                            : "No"}
+                          {application.petExperience?.hasOtherPets ? "Yes" : "No"}
                         </p>
                       </div>
-                      {application.petExperience.previousExperience && (
+                      {application.petExperience?.previousExperience && (
                         <div className="bg-gray-50 p-3 rounded-lg">
                           <p className="text-xs text-gray-500 mb-1">
                             Previous Experience
                           </p>
                           <p className="font-medium text-gray-800">
-                            {application.petExperience.previousExperience}
+                            {application.petExperience?.previousExperience}
                           </p>
                         </div>
                       )}
@@ -403,7 +398,7 @@ export default function AdoptionRequestsTab() {
                           Reason for Adoption
                         </p>
                         <p className="font-medium text-gray-800">
-                          {application.adoptionDetails.reason}
+                          {application.adoptionDetails?.reason || "Not specified"}
                         </p>
                       </div>
                       <div className="bg-gray-50 p-3 rounded-lg">
@@ -411,7 +406,7 @@ export default function AdoptionRequestsTab() {
                           Daily Schedule
                         </p>
                         <p className="font-medium text-gray-800">
-                          {application.adoptionDetails.schedule}
+                          {application.adoptionDetails?.schedule || "Not specified"}
                         </p>
                       </div>
                     </div>
@@ -447,8 +442,8 @@ export default function AdoptionRequestsTab() {
                 Please provide a reason for rejecting this application for:
               </p>
               <p className="font-semibold text-blue-600">
-                {currentApplication?.petId.name} (by{" "}
-                {currentApplication?.adopterId.name})
+                {currentApplication?.petId?.name || "Unknown Pet"} (by{" "}
+                {currentApplication?.adopterId?.name || "Unknown Applicant"})
               </p>
             </div>
 
@@ -482,7 +477,7 @@ export default function AdoptionRequestsTab() {
         </div>
       )}
 
-      <style jsx>{`
+      <style>{`
         @keyframes fadeIn {
           from {
             opacity: 0;
