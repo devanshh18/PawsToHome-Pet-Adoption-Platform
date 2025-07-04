@@ -2,7 +2,7 @@ import axios from "axios";
 
 // Configure axios instance
 const API = axios.create({
-  baseURL: "https://paws-to-home-pet-adoption-platform.vercel.app/api",
+  baseURL: "https://pawstohome-backend.onrender.com/api",
   withCredentials: true,
 });
 
