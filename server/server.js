@@ -23,7 +23,7 @@ const app = express();
 const allowedOrigins = [
   "http://localhost:5173",
   "https://paws-to-home-pet-adoption-platform-six.vercel.app",
-  "https://pawstohome.live"
+  "https://pawstohome.live",
 ];
 
 app.use(
@@ -32,7 +32,9 @@ app.use(
       if (!origin || allowedOrigins.includes(origin)) {
         callback(null, true);
       } else {
-        callback(new Error("CORS policy does not allow access from this origin"));
+        callback(
+          new Error("CORS policy does not allow access from this origin")
+        );
       }
     },
     credentials: true,
