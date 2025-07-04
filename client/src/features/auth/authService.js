@@ -1,7 +1,7 @@
 import axios from "axios";
 
 export const API = axios.create({
-  baseURL: "http://localhost:5000/api/auth",
+  baseURL: "https://paws-to-home-pet-adoption-platform.vercel.app/api/auth",
   withCredentials: true,
 });
 
