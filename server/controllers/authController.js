@@ -15,11 +15,19 @@ const generateToken = (id) => {
 const sendTokenResponse = (user, statusCode, res) => {
   const token = generateToken(user._id);
 
+  // const cookieOptions = {
+  //   expires: new Date(Date.now() + 24 * 60 * 60 * 1000), // 1 day
+  //   httpOnly: true,
+  //   secure: process.env.NODE_ENV === "production",
+  //   sameSite: "strict",
+  // };
+
   const cookieOptions = {
     expires: new Date(Date.now() + 24 * 60 * 60 * 1000), // 1 day
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "strict",
+    secure: true, // Set to true for HTTPS
+    sameSite: "none", // Change from "strict" to "none" for cross-domain
+    domain: ".vercel.app" // Optional: Try to share between subdomains
   };
 
   res
