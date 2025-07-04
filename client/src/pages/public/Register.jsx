@@ -13,9 +13,15 @@ import {
 } from "react-icons/fi";
 import { motion } from "framer-motion";
 import { useDispatch, useSelector } from "react-redux";
-import { endLoading, setUser, startLoading } from "../../features/auth/authSlice";
+import {
+  endLoading,
+  setUser,
+  startLoading,
+} from "../../features/auth/authSlice";
 import LoadingSpinner from "../../components/shared/LoadingSpinner";
 import { indianCities, indianStates } from "../../utils/location";
+// Import images to avoid 404 errors
+import registerIllustration from "../../assets/register-illustration.svg";
 
 export default function Register() {
   const [step, setStep] = useState(1);
@@ -125,7 +131,7 @@ export default function Register() {
         <div className="hidden lg:block w-1/2 bg-gradient-to-br from-indigo-600 to-blue-500 p-8">
           <div className="h-full flex flex-col justify-center items-center text-white">
             <img
-              src="/src/assets/register-illustration.svg" // Replace with your image
+              src={registerIllustration}
               alt="Register Illustration"
               className="w-64 mb-8"
             />

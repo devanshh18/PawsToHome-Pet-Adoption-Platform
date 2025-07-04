@@ -7,6 +7,10 @@ import { setUser } from "../../features/auth/authSlice";
 import { toast } from "react-toastify";
 import { FiEye, FiEyeOff, FiAlertCircle } from "react-icons/fi";
 import { motion } from "framer-motion";
+// Import images to avoid 404 errors
+import loginIllustration from "../../assets/login-illustration.avif";
+import googleIcon from "../../assets/google-icon.svg";
+import facebookIcon from "../../assets/facebook-icon.svg";
 
 export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
@@ -46,7 +50,7 @@ export default function Login() {
         <div className="hidden md:block w-1/2 bg-gradient-to-br from-indigo-600 to-blue-500 p-8">
           <div className="h-full flex flex-col justify-center items-center text-white">
             <img
-              src="/src/assets/login-illustration.avif"
+              src={loginIllustration}
               alt="Login Illustration"
               className="w-64 mb-8"
             />
@@ -177,7 +181,7 @@ export default function Login() {
                 className="w-full flex items-center justify-center gap-2 bg-white border border-gray-300 rounded-lg py-2.5 text-gray-700 hover:bg-gray-50"
               >
                 <img
-                  src="/src/assets/google-icon.svg"
+                  src={googleIcon}
                   className="w-5 h-5"
                   alt="Google"
                 />
@@ -188,7 +192,7 @@ export default function Login() {
                 className="w-full flex items-center justify-center gap-2 bg-white border border-gray-300 rounded-lg py-2.5 text-gray-700 hover:bg-gray-50"
               >
                 <img
-                  src="/src/assets/facebook-icon.svg"
+                  src={facebookIcon}
                   className="w-6 h-6"
                   alt="Facebook"
                 />

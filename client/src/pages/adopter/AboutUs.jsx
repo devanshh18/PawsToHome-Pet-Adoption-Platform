@@ -6,6 +6,9 @@ import {
   SparklesIcon,
 } from "@heroicons/react/24/outline";
 import { Link } from "react-router-dom";
+// Import images to avoid 404 errors
+import aboutUsImg from "../../assets/about-us-img.jpg";
+import puppyMillImg from "../../assets/puppy-mill.jpg";
 
 const AboutUs = () => {
   const stats = [
@@ -148,7 +151,7 @@ const AboutUs = () => {
                 {/* Main image */}
                 <div className="relative z-20 md:absolute md:top-0 md:right-0 md:w-5/6 h-[350px] md:h-5/6 rounded-2xl overflow-hidden shadow-2xl">
                   <img
-                    src="/src/assets/about-us-img.jpg"
+                    src={aboutUsImg}
                     alt="Happy adopted dog with owner"
                     className="w-full h-full object-cover"
                   />
@@ -327,7 +330,7 @@ const AboutUs = () => {
               className="relative rounded-2xl overflow-hidden shadow-xl h-[450px]"
             >
               <img
-                src="/src/assets/puppy-mill.jpg"
+                src={puppyMillImg}
                 alt="Unethical breeding conditions"
                 className="w-full h-full object-cover"
               />

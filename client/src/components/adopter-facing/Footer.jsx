@@ -63,8 +63,8 @@ const Footer = () => {
               </p>
               <p className="text-gray-600">
                 Phone:&nbsp;
-                <a href="tel:+91234567890" className="underline">
-                  +91234567890
+                <a href="tel:+916351274320" className="underline">
+                  +916351274320
                 </a>
               </p>
               <p className="text-gray-600">
