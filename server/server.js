@@ -22,7 +22,8 @@ const app = express();
 // Configure CORS with credentials
 const allowedOrigins = [
   "http://localhost:5173",
-  "https://paws-to-home-pet-adoption-platform-six.vercel.app"
+  "https://paws-to-home-pet-adoption-platform-six.vercel.app",
+  "https://pawstohome.live"
 ];
 
 app.use(
