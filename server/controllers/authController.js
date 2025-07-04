@@ -27,7 +27,7 @@ const sendTokenResponse = (user, statusCode, res) => {
     httpOnly: true,
     secure: true, // Set to true for HTTPS
     sameSite: "none", // Change from "strict" to "none" for cross-domain
-    domain: ".vercel.app" // Optional: Try to share between subdomains
+    path: "/" // Ensure cookie is accessible across all paths
   };
 
   res

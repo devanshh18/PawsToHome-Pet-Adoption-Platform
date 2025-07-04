@@ -20,24 +20,15 @@ dotenv.config();
 const app = express();
 
 // Configure CORS with credentials
-const allowedOrigins = [
-  "http://localhost:5173",
-  "https://paws-to-home-pet-adoption-platform-six.vercel.app",
-  "https://paws-to-home-pet-adoption-platform.vercel.app"
-];
-
 app.use(
   cors({
-    origin: function (origin, callback) {
-      // Allow requests with no origin (like mobile apps, curl, etc.)
-      if (!origin) return callback(null, true);
-      if (allowedOrigins.includes(origin)) {
-        return callback(null, true);
-      } else {
-        return callback(new Error("Not allowed by CORS"));
-      }
-    },
+    origin: [
+      process.env.FRONTEND_URL || "http://localhost:5173",
+      "https://paws-to-home-pet-adoption-platform-six.vercel.app"
+    ],
     credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization", "x-csrf-token"],
   })
 );
 
