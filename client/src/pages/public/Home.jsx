@@ -14,6 +14,7 @@ import {
   HeartIcon,
   MapPinIcon,
 } from "@heroicons/react/24/solid";
+import heroBgImage from "../../assets/hero-bg.jpg";
 import { indianStates, indianCities } from "../../utils/location";
 import { searchPetsByLocation } from "../../features/pets/petSlice";
 
@@ -70,12 +71,12 @@ export default function Home() {
     const checkMobile = () => {
       setIsMobile(window.innerWidth < 768);
     };
-    
+
     checkMobile();
-    window.addEventListener('resize', checkMobile);
-    
+    window.addEventListener("resize", checkMobile);
+
     return () => {
-      window.removeEventListener('resize', checkMobile);
+      window.removeEventListener("resize", checkMobile);
     };
   }, []);
 
@@ -184,7 +185,7 @@ export default function Home() {
       });
 
       navigate(`/pets?${searchParams.toString()}`);
-      
+
       // Close mobile filter drawer if it's open
       setIsMobileFilterOpen(false);
     }
@@ -224,10 +225,10 @@ export default function Home() {
     slidesToScroll: 1,
     arrows: false,
     centerMode: true,
-    centerPadding: '24px',
+    centerPadding: "24px",
     autoplay: true,
     autoplaySpeed: 4000,
-    adaptiveHeight: true
+    adaptiveHeight: true,
   };
 
   // Desktop slider settings
@@ -262,26 +263,27 @@ export default function Home() {
         <div className="relative">
           <div className="h-[70vh] relative">
             {/* Hero Background Image */}
-            <div 
-              className="absolute inset-0 bg-cover bg-center" 
-              style={{ backgroundImage: `url('/src/assets/hero-bg.jpg')` }}
+            <div
+              className="absolute inset-0 bg-cover bg-center"
+              style={{ backgroundImage: `url(${heroBgImage})` }}
             />
-            
+
             {/* Dark Overlay */}
             <div className="absolute inset-0 bg-black/50" />
-            
+
             {/* Hero Content */}
             <div className="relative h-full flex flex-col justify-between px-5 pt-10 pb-12 z-10">
               <div>
-                <motion.h1 
+                <motion.h1
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.7 }}
                   className="text-white text-4xl font-bold drop-shadow-lg"
                 >
-                  Find your <br />perfect companion
+                  Find your <br />
+                  perfect companion
                 </motion.h1>
-                
+
                 <motion.p
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -291,21 +293,21 @@ export default function Home() {
                   Adopt, don't shop. Give a pet a second chance.
                 </motion.p>
               </div>
-              
+
               {/* Search Button */}
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.2 }}
               >
-                <button 
-                  onClick={() => setIsMobileFilterOpen(true)} 
+                <button
+                  onClick={() => setIsMobileFilterOpen(true)}
                   className="w-full bg-white text-blue-600 rounded-xl py-4 font-medium text-lg shadow-lg flex items-center justify-center gap-2"
                 >
                   <MagnifyingGlassIcon className="w-5 h-5" />
                   Search for Pets
                 </button>
-                
+
                 <div className="flex justify-between mt-5">
                   {["Dogs", "Cats", "Other"].map((type) => (
                     <button
@@ -332,9 +334,7 @@ export default function Home() {
               <div className="text-2xl font-bold">
                 <CountUp end={2468} duration={2.5} />+
               </div>
-              <div className="text-sm font-medium text-blue-100">
-                Adoptions
-              </div>
+              <div className="text-sm font-medium text-blue-100">Adoptions</div>
             </div>
             <button
               onClick={() => navigate("/about-us")}
@@ -344,13 +344,11 @@ export default function Home() {
             </button>
           </div>
         </div>
-        
+
         {/* Featured Pets Section */}
         <section className="py-8 px-5">
           <div className="flex items-center justify-between mb-5">
-            <h2 className="text-2xl font-bold text-gray-800">
-              Featured Pets
-            </h2>
+            <h2 className="text-2xl font-bold text-gray-800">Featured Pets</h2>
             <button
               onClick={() => navigate("/pets")}
               className="text-blue-600 font-medium text-sm flex items-center"
@@ -358,7 +356,7 @@ export default function Home() {
               See all <ArrowRightIcon className="w-4 h-4 ml-1" />
             </button>
           </div>
-          
+
           {isLoading ? (
             <div className="flex justify-center py-16">
               <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-blue-600"></div>
@@ -374,31 +372,33 @@ export default function Home() {
                       className="bg-white rounded-xl overflow-hidden shadow-md h-[340px] relative"
                     >
                       {/* Pet Image */}
-                      <div 
+                      <div
                         className="h-52 bg-cover bg-center"
                         style={{ backgroundImage: `url(${pet.photos[0]})` }}
                       />
-                      
+
                       {/* Favorite Button */}
                       <button className="absolute top-3 right-3 bg-white/60 backdrop-blur-sm p-2 rounded-full">
                         <HeartIcon className="w-5 h-5 text-red-500" />
                       </button>
-                      
+
                       {/* Available Badge */}
                       <div className="absolute top-3 left-3 bg-green-500 text-white text-xs font-bold px-2 py-1 rounded-full">
                         Available
                       </div>
-                      
+
                       {/* Pet Info */}
                       <div className="p-4">
-                        <h3 className="text-xl font-bold text-gray-800">{pet.name}</h3>
+                        <h3 className="text-xl font-bold text-gray-800">
+                          {pet.name}
+                        </h3>
                         <p className="text-gray-600 text-sm">{pet.breed}</p>
-                        
+
                         <div className="mt-3 flex items-center justify-between">
                           <div className="text-gray-700 text-sm">
                             {pet.gender} • {formatPetAge(pet.age) || "Adult"}
                           </div>
-                          
+
                           <div className="flex items-center text-gray-500 text-xs">
                             <MapPinIcon className="w-3 h-3 mr-1" />
                             {pet.shelterId?.city || "Unknown location"}
@@ -422,13 +422,13 @@ export default function Home() {
             </div>
           )}
         </section>
-        
+
         {/* Why Choose Adoption */}
         <section className="py-8 px-5 bg-gradient-to-b from-blue-50 to-white">
           <h2 className="text-2xl font-bold text-gray-800 mb-5">
             Why Choose Adoption?
           </h2>
-          
+
           <motion.div
             initial={{ y: 20, opacity: 0 }}
             whileInView={{ y: 0, opacity: 1 }}
@@ -437,15 +437,17 @@ export default function Home() {
             className="bg-white p-5 rounded-xl shadow-sm border-l-4 border-blue-500"
           >
             <p className="text-gray-700 leading-relaxed">
-              Adopting a pet gives them a second chance at a loving home. 
-              When you adopt, you're not just bringing home a pet; 
-              you're saving a life and making room for another animal in need.
+              Adopting a pet gives them a second chance at a loving home. When
+              you adopt, you're not just bringing home a pet; you're saving a
+              life and making room for another animal in need.
             </p>
-            
+
             <div className="mt-4 flex justify-between">
               <div className="text-center flex-1">
                 <div className="text-xl font-bold text-blue-600">6.5M</div>
-                <div className="text-xs text-gray-500">Pets in shelters yearly</div>
+                <div className="text-xs text-gray-500">
+                  Pets in shelters yearly
+                </div>
               </div>
               <div className="text-center flex-1">
                 <div className="text-xl font-bold text-green-600">1.5M</div>
@@ -457,7 +459,7 @@ export default function Home() {
               </div>
             </div>
           </motion.div>
-          
+
           <div className="mt-4">
             <button
               onClick={() => navigate("/about-us")}
@@ -467,7 +469,7 @@ export default function Home() {
             </button>
           </div>
         </section>
-        
+
         {/* Share Your Story CTA */}
         <section className="py-8 px-5">
           <div className="bg-gradient-to-r from-indigo-500 to-blue-500 text-white rounded-xl p-5 shadow-lg">
@@ -483,13 +485,13 @@ export default function Home() {
             </button>
           </div>
         </section>
-        
+
         {/* Stats Section - Simplified for Mobile */}
         <section className="py-8 px-5 bg-blue-50">
           <h2 className="text-2xl font-bold text-center text-gray-800 mb-6">
             Our Impact
           </h2>
-          
+
           <div className="grid grid-cols-2 gap-3">
             <div className="bg-white p-4 rounded-xl shadow-sm text-center">
               <div className="w-10 h-10 mx-auto bg-blue-100 rounded-full flex items-center justify-center mb-2">
@@ -500,7 +502,7 @@ export default function Home() {
               </div>
               <div className="text-gray-500 text-sm">Pets Adopted</div>
             </div>
-            
+
             <div className="bg-white p-4 rounded-xl shadow-sm text-center">
               <div className="w-10 h-10 mx-auto bg-indigo-100 rounded-full flex items-center justify-center mb-2">
                 <svg
@@ -523,7 +525,7 @@ export default function Home() {
               </div>
               <div className="text-gray-500 text-sm">Shelter Partners</div>
             </div>
-            
+
             <div className="bg-white p-4 rounded-xl shadow-sm text-center">
               <div className="w-10 h-10 mx-auto bg-green-100 rounded-full flex items-center justify-center mb-2">
                 <svg
@@ -546,7 +548,7 @@ export default function Home() {
               </div>
               <div className="text-gray-500 text-sm">Community Members</div>
             </div>
-            
+
             <div className="bg-white p-4 rounded-xl shadow-sm text-center">
               <div className="w-10 h-10 mx-auto bg-amber-100 rounded-full flex items-center justify-center mb-2">
                 <svg
@@ -571,7 +573,7 @@ export default function Home() {
             </div>
           </div>
         </section>
-        
+
         {/* Mobile Filter Drawer */}
         {isMobileFilterOpen && (
           <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm">
@@ -579,14 +581,14 @@ export default function Home() {
               <div className="p-5">
                 <div className="flex justify-between items-center mb-5">
                   <h3 className="text-xl font-bold text-gray-800">Find Pets</h3>
-                  <button 
+                  <button
                     onClick={() => setIsMobileFilterOpen(false)}
                     className="p-2 text-gray-500 hover:text-gray-700"
                   >
                     ✕
                   </button>
                 </div>
-                
+
                 <div className="space-y-5">
                   {/* Pet Type Selection */}
                   <div>
@@ -609,7 +611,7 @@ export default function Home() {
                       ))}
                     </div>
                   </div>
-                  
+
                   {/* Location */}
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -634,7 +636,7 @@ export default function Home() {
                       )}
                     </select>
                   </div>
-                  
+
                   {/* Age and Gender */}
                   {["dogs", "cats"].includes(activeTab) && (
                     <div className="grid grid-cols-2 gap-4">
@@ -651,13 +653,11 @@ export default function Home() {
                           className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                         >
                           <option value="Any">Any</option>
-                          {["baby", "young", "adult", "senior"].map(
-                            (opt) => (
-                              <option key={opt} value={opt}>
-                                {opt.charAt(0).toUpperCase() + opt.slice(1)}
-                              </option>
-                            )
-                          )}
+                          {["baby", "young", "adult", "senior"].map((opt) => (
+                            <option key={opt} value={opt}>
+                              {opt.charAt(0).toUpperCase() + opt.slice(1)}
+                            </option>
+                          ))}
                         </select>
                       </div>
 
@@ -683,7 +683,7 @@ export default function Home() {
                       </div>
                     </div>
                   )}
-                  
+
                   {/* Search Button */}
                   <button
                     onClick={handleSearch}
@@ -697,7 +697,7 @@ export default function Home() {
             </div>
           </div>
         )}
-        
+
         {/* Custom styles for mobile */}
         <style jsx>{`
           .custom-dots {
@@ -705,27 +705,27 @@ export default function Home() {
             position: relative;
             bottom: 10px;
           }
-          
+
           .custom-dots li button:before {
             color: #3b82f6;
             font-size: 8px;
             opacity: 0.5;
           }
-          
+
           .custom-dots li.slick-active button:before {
             color: #3b82f6;
             opacity: 1;
           }
-          
+
           .pet-carousel-container .slick-slide {
             height: inherit !important;
             padding: 5px 0;
           }
-          
+
           .pet-carousel-container .slick-track {
             display: flex !important;
           }
-          
+
           .pet-carousel-container .slick-slide > div {
             height: 100%;
           }
@@ -816,7 +816,10 @@ export default function Home() {
                             className="w-full pt-5 pb-2 px-3 border rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent focus:outline-none"
                             value={filters[field]}
                             onChange={(e) =>
-                              setFilters({ ...filters, [field]: e.target.value })
+                              setFilters({
+                                ...filters,
+                                [field]: e.target.value,
+                              })
                             }
                           >
                             {field !== "location" && (
@@ -837,7 +840,8 @@ export default function Home() {
                               ? ["baby", "young", "adult", "senior"].map(
                                   (opt) => (
                                     <option key={opt} value={opt}>
-                                      {opt.charAt(0).toUpperCase() + opt.slice(1)}
+                                      {opt.charAt(0).toUpperCase() +
+                                        opt.slice(1)}
                                     </option>
                                   )
                                 )
@@ -965,7 +969,9 @@ export default function Home() {
                           <div className="relative">
                             <div
                               className="h-48 md:h-64 bg-cover bg-center transition-transform duration-700 hover:scale-110"
-                              style={{ backgroundImage: `url(${pet.photos[0]})` }}
+                              style={{
+                                backgroundImage: `url(${pet.photos[0]})`,
+                              }}
                             />
 
                             {/* Subtle gradient overlay */}
@@ -1224,8 +1230,8 @@ export default function Home() {
               >
                 Adopting a pet is more than just finding a furry friend; it's
                 about giving a second chance to a life in need. Every year,
-                countless animals end up in shelters waiting for a loving home. By
-                adopting, you're not only saving a life but also making space
+                countless animals end up in shelters waiting for a loving home.
+                By adopting, you're not only saving a life but also making space
                 for another pet to be cared for.
               </motion.div>
             </motion.div>
