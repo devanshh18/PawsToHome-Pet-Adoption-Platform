@@ -30,6 +30,7 @@ export default function Register() {
   const [showPassword, setShowPassword] = useState(false);
   const [licenseFile, setLicenseFile] = useState(null);
   const [dragActive, setDragActive] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const {
     register,
     handleSubmit,
@@ -89,6 +90,7 @@ export default function Register() {
         return;
       }
 
+      setIsSubmitting(true);
       dispatch(startLoading());
 
       if (userType === "shelter") {
@@ -111,6 +113,7 @@ export default function Register() {
         navigate("/"); // Redirect to home
       }
     } catch (error) {
+      setIsSubmitting(false);
       dispatch(endLoading());
       toast.error(error.response?.data?.message || "Registration failed");
     }
@@ -579,18 +582,24 @@ export default function Register() {
                 <button
                   type="button"
                   onClick={() => setStep(1)}
-                  className="w-1/2 py-3 bg-gray-100 text-gray-700 rounded-lg font-semibold hover:bg-gray-200 transition-all"
+                  disabled={isSubmitting}
+                  className="w-1/2 py-3 bg-gray-100 text-gray-700 rounded-lg font-semibold hover:bg-gray-200 transition-all disabled:opacity-70"
                 >
                   Back
                 </button>
               )}
               <button
                 type="submit"
+                disabled={isSubmitting}
                 className={`w-full py-3 bg-gradient-to-r from-indigo-600 to-blue-500 text-white rounded-lg font-semibold hover:shadow-lg transition-all ${
                   step === 2 ? "w-1/2" : "w-full"
-                }`}
+                } disabled:opacity-70`}
               >
-                {userType === "shelter" && step === 1
+                {isSubmitting
+                  ? userType === "shelter" && step === 1
+                    ? "Processing..."
+                    : "Creating Account..."
+                  : userType === "shelter" && step === 1
                   ? "Continue"
                   : "Create Account"}
               </button>

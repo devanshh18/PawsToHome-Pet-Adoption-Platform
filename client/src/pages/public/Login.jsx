@@ -14,6 +14,7 @@ import facebookIcon from "../../assets/facebook-icon.svg";
 
 export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false); // Add this line
   const {
     register,
     handleSubmit,
@@ -24,6 +25,7 @@ export default function Login() {
 
   const onSubmit = async (data) => {
     try {
+      setIsSubmitting(true); // Set loading to true when submission starts
       const response = await login(data);
       dispatch(setUser(response.user));
 
@@ -35,6 +37,7 @@ export default function Login() {
         navigate("/");
       }
     } catch (error) {
+      setIsSubmitting(false); // Reset loading state on error
       toast.error(error.response?.data?.message || "Login failed");
     }
   };
@@ -159,9 +162,10 @@ export default function Login() {
 
             <button
               type="submit"
-              className="w-full bg-gradient-to-r from-indigo-600 to-blue-500 text-white py-3 px-4 rounded-lg font-semibold hover:shadow-lg transition-all"
+              disabled={isSubmitting}
+              className="w-full bg-gradient-to-r from-indigo-600 to-blue-500 text-white py-3 px-4 rounded-lg font-semibold hover:shadow-lg transition-all disabled:opacity-70"
             >
-              Sign In
+              {isSubmitting ? "Signing in..." : "Sign In"}
             </button>
 
             <div className="relative">
@@ -180,22 +184,14 @@ export default function Login() {
                 type="button"
                 className="w-full flex items-center justify-center gap-2 bg-white border border-gray-300 rounded-lg py-2.5 text-gray-700 hover:bg-gray-50"
               >
-                <img
-                  src={googleIcon}
-                  className="w-5 h-5"
-                  alt="Google"
-                />
+                <img src={googleIcon} className="w-5 h-5" alt="Google" />
                 Google
               </button>
               <button
                 type="button"
                 className="w-full flex items-center justify-center gap-2 bg-white border border-gray-300 rounded-lg py-2.5 text-gray-700 hover:bg-gray-50"
               >
-                <img
-                  src={facebookIcon}
-                  className="w-6 h-6"
-                  alt="Facebook"
-                />
+                <img src={facebookIcon} className="w-6 h-6" alt="Facebook" />
                 Facebook
               </button>
             </div>
